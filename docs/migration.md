@@ -1,8 +1,9 @@
 # Migrating data from Biostar 2 to Biostar 4
 
 There is a migration script in the Biostar 4 source directory
-that migrate data across the software versions. The following
-steps need to be followed. The paths to directory names
+that will migrate all data across the software versions. 
+
+The paths to directory names
 will need to be changed to match your installation.
 We label them as `biostar2-central` and `biostar4-central`
 
@@ -30,8 +31,9 @@ versions as `python2`, `pip2` and `python3` and `pip3`.
 	
 2. Add `mongodb` specific settings to the biostar 2 settings file.
 
-		echo 'MONGODB_NAME = os.getenv("MONGODB_NAME", "test")' >> ~/app/biostar-central/biostar/settings/base.py
-		echo 'MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017/test")' >> ~/app/biostar-central/biostar/settings/base.py
+		SETTINGS=~/app/biostar2-central/biostar/settings/base.py
+		echo 'MONGODB_NAME = os.getenv("MONGODB_NAME", "test")' >> $SETTINGS
+		echo 'MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017/test")' >> $SETTINGS
 		
 3. Add both the biostar 2 and biostar 4 source directories to the python import path:
 
