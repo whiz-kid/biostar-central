@@ -40,17 +40,14 @@
 
                     {% if target.scholar %}
                         &bull;
-                        <a class="uk-icon-book"
-                           href="http://scholar.google.com/citations?user={{ target.scholar }}">
-                            Google Scholar</a>
+                        <a href="http://scholar.google.com/citations?user={{ target.scholar }}">
+                            <i class="uk-icon-book"></i> Google Scholar</a>
                     {% endif %}
 
                     {% if target.twitter %}
-
                         &bull; Twitter:
-                        <a
-                                href="http://twitter.com/{{ target.twitter }}"><i
-                                class=uk-icon-twitter></i>{{ target.twitter }}</a>
+                        <a href="http://twitter.com/{{ target.twitter }}">
+                            <i class="uk-icon-twitter"></i>{{ target.twitter }}</a>
                     {% endif %}
 
                 </div>
