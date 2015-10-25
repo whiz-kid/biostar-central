@@ -25,7 +25,8 @@ ADMINS = [
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY") or 'x6-76b$bvosk=u1p#xe#qo@(ib_(15how%lawko4-!^&qruzo%'
+SECRET_KEY = os.getenv(
+    "SECRET_KEY") or 'x6-76b$bvosk=u1p#xe#qo@(ib_(15how%lawko4-!^&qruzo%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if os.getenv("BIOSTAR_DEPLOY"):
@@ -74,7 +75,9 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': TMPL_DIRS,
         'APP_DIRS': True,
+
         'OPTIONS': {
+            'string_if_invalid': '*** MISSING VARIABLE ***',
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -97,8 +100,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-
-TEMPLATE_STRING_IF_INVALID = "*** MISSING VARIABLE ***"
 
 # The google ID will be injected as a template variable.
 GOOGLE_TRACKER = ""
@@ -132,4 +133,5 @@ MONGODB_NAME = os.getenv("MONGODB_NAME", "biostar-test")
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017/test")
 
 # Email settings
-EMAIL_BACKEND = os.getenv("EMAIL_BACKEND") or 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND") or 'django.core.mail.backends.console.EmailBackend'
