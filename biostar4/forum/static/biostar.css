@@ -154,8 +154,12 @@ dd {
     color: red;
 }
 
-.messagelist {
+.messagelist .info {
     color: #228b22;
+}
+
+.messagelist .error {
+    color: red;
 }
 
 .muted {
@@ -165,6 +169,10 @@ dd {
 .logo {
     float: left;
     max-width: 313px;
+}
+
+.wmd-preview {
+    background-color: red;
 }
 
 .search {

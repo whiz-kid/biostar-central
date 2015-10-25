@@ -36,7 +36,7 @@ def fill_user(f):
 
     @wraps(f)
     def decorated_function(request, *args, **kwargs):
-        user = User.get(request)
+        user = request.user
         return f(request, user, *args, **kwargs)
 
     return decorated_function
@@ -47,7 +47,7 @@ def fill_post(f):
 
     @wraps(f)
     def decorated_function(request, pid, *args, **kwargs):
-        user = User.get(request)
+        user = request.user
         post = Post.objects.filter(pid=pid).first()
         if not post:
             utils.error(request, "The post cannot be found. Perhaps it has been deleted.")
@@ -118,8 +118,12 @@ class User(Document):
     access = IntField(required=True, default=ACTIVE,
                       choices=list(ACCESS_TYPES.keys()))
 
+    # A user friendly representation of access permissions.
     def get_access(self):
-        return self.USER_ACCESS.get(self.access, "???")
+        return self.ACCESS_TYPES.get(self.access, "???")
+
+    def is_suspended(self):
+        return self.access != self.ACTIVE
 
     # Autoincrementing sequence.
     seq = SequenceField()
@@ -215,15 +219,11 @@ class User(Document):
         self.messages = self.messages[-self.MAX_MESSAGES:]
         self.save()
 
-    @property
-    def is_suspended(self):
-        return False
-
     def save(self, *args, **kwargs):
         self.date_joined = self.date_joined or datetime.now()
         self.last_login = self.last_login or self.date_joined
         self.uid = self.seq
-        self.username = self.username or "User%d" % self.uid
+        self.username = self.username or "user%d" % self.uid
         self.html = html.sanitize(self.text)
         super(User, self).save(*args, **kwargs)
 

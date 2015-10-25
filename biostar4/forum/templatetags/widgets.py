@@ -76,23 +76,21 @@ def hide_email(value):
     "Hides parts of an email"
     try:
         addr, host = value.split('@')
-        hide = '*' * (len(addr) - 1)
-        email = addr[0] + hide + '@' + host
+        email = '*' '@' + host
         return email
     except Exception as exc:
         return value
 
 @register.simple_tag
 def gravatar(user, size=80):
-    name = user.name
-    if user.is_suspended:
+
+    if user.is_suspended():
         # Removes spammy images for suspended users
         email = b'suspended@biostars.org'
     else:
         email = bytes(user.email.encode("utf-8"))
 
     hashid = hashlib.md5(email).hexdigest()
-
     gravatar_url = "https://secure.gravatar.com/avatar/%s?" % hashid
     gravatar_url += urlencode(dict(s=str(size), d='identicon'))
 

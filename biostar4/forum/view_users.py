@@ -1,10 +1,9 @@
-from django.shortcuts import render, redirect
-from forum import forms
-from forum.models import *
-from forum import utils
-from django.core.files.storage import FileSystemStorage
-from datetime import datetime
 import random
+from datetime import datetime
+from django.shortcuts import render, redirect
+from biostar4.forum import forms, utils
+from biostar4.forum.models import *
+from django.core.files.storage import FileSystemStorage
 
 
 @login_required
@@ -19,10 +18,10 @@ def my_site(request, user):
         user=user,
         posts=posts
     )
-    user.add_message("OK THIS IS FINE %s" % datetime.now())
-    user.new_votes = random.randint(0, 20)
+    user.add_message("Creating random message at timestamp %s" % datetime.now())
+    user.new_votes += 1
     user.save()
-    return render(request, "post_list.html", context=context)
+    return render(request, "user_mysite.html", context=context)
 
 
 @fill_user
@@ -73,7 +72,7 @@ def votes(request, user):
 def user_edit(request, user):
     if request.method == 'POST':
         fs = FileSystemStorage()
-        form = forms.UserEditForm(request.POST, request.FILES)
+        form = forms.UserEditForm(user, request.POST, request.FILES)
 
         # Save uploaded file.
         stream = request.FILES.get('upload')
@@ -82,6 +81,7 @@ def user_edit(request, user):
         if stream:
             if len(user.files) > User.MAX_FILE_NUM:
                 form.add_error(None, "Uploading too many files.  Max number is %s" % User.MAX_FILE_NUM)
+
 
         if form.is_valid():
             # This will be used to remove files if needed.
@@ -122,7 +122,7 @@ def user_edit(request, user):
             watched_tags=','.join(user.watched_tags),
             files=" \n".join(user.files)
         )
-        form = forms.UserEditForm(initial=initial)
+        form = forms.UserEditForm(user, initial=initial)
 
     context = dict(
         user=user,
@@ -180,8 +180,11 @@ def login(request):
 
         if form.is_valid():
             user = User.objects.get(email=form.cleaned_data['email'])
-            user.login(request)
-            utils.info(request, "Login successful")
+            if user.is_suspended():
+                utils.error(request, "This account has been suspended!")
+            else:
+                user.login(request)
+                utils.info(request, "Login successful.")
             return redirect("home")
 
     else:

@@ -2,7 +2,7 @@
     <div class="block uk-panel uk-panel-box">
         <ul class="messagelist">
             {% for message in messages %}
-                <li>{{ message }}</li>
+                <li class="{{ message.tags }}">{{ message }}</li>
             {% endfor %}
         </ul>
     </div>

@@ -56,6 +56,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'biostar4.middleware.BiostarMiddleware',
 )
 
 ROOT_URLCONF = 'biostar4.urls'
@@ -117,8 +118,15 @@ STATICFILES_DIRS = static_dirs + [
     os.path.join(BASE_DIR, "forum", "static"),
 ]
 
-STATIC_ROOT = os.getenv("STATIC_ROOT") or os.path.join(BASE_DIR, "www", "static")
-MEDIA_ROOT = os.getenv("MEDIA_ROOT") or os.path.join(BASE_DIR, "www", "media")
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+STATIC_ROOT = os.getenv("STATIC_ROOT") or os.path.join(BASE_DIR, "www", "export", "static")
+MEDIA_ROOT = os.getenv("MEDIA_ROOT") or os.path.join(BASE_DIR, "www", "export", "media")
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'

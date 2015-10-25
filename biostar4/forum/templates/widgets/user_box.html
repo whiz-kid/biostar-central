@@ -1,15 +1,17 @@
 {% load widgets %}
 
-<div class="uk-overflow-container uk-text-center"">
+<div class="uk-overflow-container uk-text-center">
     <a href="{% url "user_profile" uid=target.uid %}">
-        <img class="uk-border-circle" src="{% gravatar user=target size=size%}" alt="">
-        <div class="uk-text-center">
-            @{{ target.username}}
-        </div>
+        <img class="uk-border-circle" src="{% gravatar user=target size=size %}" alt="">
+
         <div class="uk-text-center">
             {{ target.name }}
         </div>
     </a>
+
+    <div class="uk-text-center">
+        @{{ target.username }}
+    </div>
 </div>
 
 <div class="uk-text-muted uk-text-center">

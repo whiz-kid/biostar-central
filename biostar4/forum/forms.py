@@ -49,11 +49,6 @@ def unique_email(email):
         raise ValidationError('The {} email already exists '.format(email))
 
 
-def unique_username(username):
-    if User.objects.filter(username=username):
-        raise ValidationError('The {} username already exists '.format(username))
-
-
 def check_email(email):
     if not User.objects.filter(email=email):
         raise ValidationError('The {} email does not exists '.format(email))
@@ -120,9 +115,8 @@ class UserEditForm(forms.Form):
     email = forms.CharField(label='Email', required=True,
                             help_text="Your email on the site")
 
-    username = forms.CharField(label='Username', required=True, max_length=8,
-                               validators=[unique_username],
-                               help_text=" Your <code>@username</code> on this site. 8 letter max. Must be unique.")
+    username = forms.CharField(label='Username', required=True, max_length=10,
+                               help_text=" Your <code>@username</code> on this site. 10 letter max. Must be unique.")
 
     twitter = forms.CharField(label='Twitter',
                               required=False,
@@ -184,13 +178,25 @@ class UserEditForm(forms.Form):
         data = text.split()
         return data
 
+    def clean_email(self):
+        text = self.cleaned_data['email']
+        if text != self.user.email and User.objects(email=text):
+            raise ValidationError('The email {} already exists '.format(text))
+        return text
+
     def clean_username(self):
         text = self.cleaned_data['username']
         text = text.lower()
         text = text.strip(" @")
         text = "".join(text.split())
+        if text != self.user.username and User.objects(username=text):
+            raise ValidationError('The username {} already exists '.format(text))
         return text
 
+    def __init__(self, user, *args, **kwargs):
+        # Need to access user during field validation.
+        self.user = user
+        super(UserEditForm, self).__init__(*args, **kwargs)
 
 class TopLevel(forms.Form):
     POST_TYPES = [

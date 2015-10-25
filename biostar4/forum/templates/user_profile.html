@@ -11,20 +11,27 @@
 
         <div class="uk-width-1-1 uk-width-medium-1-4">
             <img class="uk-border-circle uk-align-center"
-                 src="{% gravatar target size=150 %}"
+                 src="{% gravatar user=target size=150 %}"
                  alt="">
         </div>
 
         <div class="uk-width-1-1 uk-width-medium-3-4 uk-overflow-container">
 
-            <div>{{ target.get_role }}: {{ target.name }}</div>
+            <div>{{ target.get_role }}: {{ target.name }} </div>
 
+            <div>Status: {{ target.get_access }} &bull; Email
+
+                {% if user == target %}
+                    ({{ target.email }})
+                {% else %}
+                    ({{ target.email|hide_email }})
+                {% endif %}
+            </div>
             <div class="uk-texts-muted">
 
                 <div>
                     Score: {{ target.score }} &bull;
                     Posts: {{ target.post_num }}
-                    &bull;
                 </div>
 
                 <div>
@@ -42,8 +49,8 @@
 
                         &bull; Twitter:
                         <a
-                        href="http://twitter.com/{{ target.twitter }}"><i
-                        class=uk-icon-twitter></i>{{ target.twitter }}</a>
+                                href="http://twitter.com/{{ target.twitter }}"><i
+                                class=uk-icon-twitter></i>{{ target.twitter }}</a>
                     {% endif %}
 
                 </div>
