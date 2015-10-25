@@ -1,7 +1,6 @@
 # Biostar 4
 
-Biostar: Software for Building Scientific Communities
-=====================================================
+## Biostar: Software for Building Scientific Communities
 
 Branch 4.0 rewrite. Under heavy development. See:
 https://github.com/ialbert/biostar-central/issues/291
@@ -11,12 +10,11 @@ We'll clean it up by the first release.
 
 Python 3, Django and [MongoDB][mongodb] based Q&A site.
 
-Test site: http://test.biostars.org
+Test site (may be on or off): http://test.biostars.org
 
 [mongodb]: https://www.mongodb.org/
 
-Install
--------
+## Install
 
 1. Get `mongodb` working on a computer.  
 
@@ -37,7 +35,6 @@ Install
 
 		more biostar4/settings.py
 
-Documentation
--------------
+# Documentation
 
 * [Migrating from Biostar 2](docs/migrate.md)
