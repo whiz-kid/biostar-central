@@ -37,4 +37,4 @@ Test site (may be on or off): http://test.biostars.org
 
 # Documentation
 
-* [Migrating from Biostar 2](docs/migrate.md)
+* [Migrating from Biostar 2](docs/migration.md)
