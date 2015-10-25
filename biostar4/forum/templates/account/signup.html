@@ -1,0 +1,38 @@
+{% extends 'site_base.html' %}
+{% load widgets %}
+
+{% block title %}Sign up{% endblock %}
+
+{% block body %}
+
+    <form method="post" class="uk-form uk-form-stacked" action="{% url 'signup' %}">
+        <fieldset data-uk-margin>
+
+            <div class="block">Enter your email and a password to create a new account.</div>
+
+            {% form_errors form %}
+
+            <div class="uk-form-row">
+                {{ form.email.errors }}
+                <label class="uk-form-label" for="email">Email</label>
+                {{ form.email }}
+            </div>
+            <div class="uk-form-row">
+                {{ form.password.errors }}
+                <label class="uk-form-label" for="password">Password</label>
+                {{ form.password }}
+                {% csrf_token %}
+            </div>
+            {% if captcha %}
+                <div class="uk-form-row">
+                    {{ captcha|safe }}
+                </div>
+            {% endif %}
+            <div class="uk-form-row">
+                <button class="uk-button uk-button-success">Sign up</button>
+            </div>
+        </fieldset>
+
+    </form>
+
+{% endblock %}

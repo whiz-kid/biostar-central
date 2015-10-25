@@ -1,0 +1,71 @@
+{% load staticfiles %}
+{% load widgets %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Title{% endblock %}</title>
+
+    {% include 'site_assets.html' %}
+
+    {% block head %}
+        {#  extra header related content #}
+    {% endblock %}
+
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<div class="uk-container">
+
+    <div class="uk-grid uk-grid-small">
+
+        {# Site logo #}
+        <div class="uk-width-1-1 uk-width-small-1-4">
+            <a href="{% url "home" %}">
+                <img src="{% static "sitelogo.png" %}">
+            </a></div>
+
+        {# Search box #}
+        <div class="uk-width-1-1 uk-width-small-3-4 search uk-vertical-align">
+            <form class="uk-form uk-width-1-1 uk-width-small-1-2 uk-vertical-align-middle">
+                <input class="search" type="text" placeholder="Search" style="width:100%">
+            </form>
+        </div>
+
+        {# Navigation bar #}
+        <div class="uk-width-1-1" id="header">
+            {% nav_bar request=request user=user %}
+        </div>
+
+        {# Message bar #}
+        {% if messages %}
+            <div class="uk-width-1-1" id="messages">
+                {% message_bar messages %}
+            </div>
+        {% endif %}
+
+        {# This is where all content will go #}
+        <div class="uk-width-1-1" id="body">
+            {% block body %}
+
+                Block Body
+            {% endblock %}
+        </div>
+
+        {# Footer section #}
+        <div class="uk-width-1-1">
+            {% block footer %}
+                <div class="uk-text-muted uk-text-small" id="footer">
+                    Powered by <a href="https://github.com/ialbert/biostar-central">Biostar
+                    4.0</a>
+                </div>
+            {% endblock %}
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

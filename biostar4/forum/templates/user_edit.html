@@ -1,0 +1,65 @@
+{% extends 'site_base.html' %}
+{% load widgets %}
+{%  load static %}
+
+{% block title %}User Edit{% endblock %}
+
+{% block head %}
+
+    <script type="text/javascript" src="{% static "lib/pagedown/Markdown.Converter.js" %}"></script>
+    <script type="text/javascript" src="{% static "lib/pagedown/Markdown.Sanitizer.js" %}"></script>
+    <script type="text/javascript" src="{% static "lib/pagedown/Markdown.Editor.js" %}"></script>
+
+    {#  Markdown editor style #}
+    <link rel="stylesheet" href={% static "lib/pagedown/markdown.css" %}>
+
+{%  endblock %}
+
+{% block body %}
+
+    <form method="post" enctype="multipart/form-data"  class="uk-form uk-form-stacked uk-width-1-1"
+          action="{% url 'user_edit' %}">
+
+        <div class="block uk-text-center">
+            <h2>Update your profile</h2>
+        </div>
+        <div class="uk-grid">
+
+
+            <div class="uk-width-1-1 uk-width-medium-1-4">&nbsp;</div>
+
+            <div class="uk-width-1-1 uk-width-medium-2-4">
+
+                {% form_errors form %}
+
+                {% for field in form %}
+                    <div class="uk-form-row">
+                        {{ field.errors }}
+                        <label class="uk-form-label"
+                               for="{{ field.name }}">{{ field.label_tag }}</label>
+
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="uk-form-help-block uk-text-muted">
+                                {{ field.help_text|safe }}
+                            </p>
+                        {% endif %}
+                     <hr>
+                    </div>
+                {% endfor %}
+
+                <div class="uk-form-row">
+                    <button class="uk-button uk-button-success uk-margin-top">Submit</button>
+                </div>
+
+                {% csrf_token %}
+
+
+            </div>
+
+        </div>
+
+
+    </form>
+
+{% endblock %}

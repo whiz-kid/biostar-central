@@ -1,0 +1,11 @@
+{% load widgets %}
+
+<div class="notify_bar">
+    {% for note in post.notify %}
+        <div class="uk-float-left uk-margin-right">
+            <img class="uk-border-circle" src="{% gravatar user=note.user size=25 %}"
+                 alt="">
+            {{ note.user.username }}
+        </div>
+    {% endfor %}
+</div>

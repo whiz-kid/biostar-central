@@ -1,0 +1,84 @@
+{% extends 'site_base.html' %}
+{% load widgets %}
+{% load staticfiles %}
+{% load humanize %}
+{% block title %}Me{% endblock %}
+
+{% block body %}
+
+    <div class="uk-grid top">
+
+
+        <div class="uk-width-1-1 uk-width-medium-1-4">
+            <img class="uk-border-circle uk-align-center"
+                 src="{% gravatar target size=150 %}"
+                 alt="">
+        </div>
+
+        <div class="uk-width-1-1 uk-width-medium-3-4 uk-overflow-container">
+
+            <div>{{ target.get_role }}: {{ target.name }}</div>
+
+            <div class="uk-texts-muted">
+
+                <div>
+                    Score: {{ target.score }} &bull;
+                    Posts: {{ target.post_num }}
+                    &bull;
+                </div>
+
+                <div>
+
+                    Username: <b>@{{ target.username }}</b>
+
+                    {% if target.scholar %}
+                        &bull;
+                        <a class="uk-icon-book"
+                           href="http://scholar.google.com/citations?user={{ target.scholar }}">
+                            Google Scholar</a>
+                    {% endif %}
+
+                    {% if target.twitter %}
+
+                        &bull; Twitter:
+                        <a
+                        href="http://twitter.com/{{ target.twitter }}"><i
+                        class=uk-icon-twitter></i>{{ target.twitter }}</a>
+                    {% endif %}
+
+                </div>
+
+                <div>
+                    Location: {{ target.location }}
+                </div>
+
+                <div>
+                    Last visited: {{ target.last_login|timesince }} ago
+                </div>
+
+                <div>
+                    Date joined: {{ target.date_joined|timesince }} ago
+                </div>
+
+                <div>
+                    Web: <a href="{{ target.website }}" rel="nofollow">
+                    {{ target.website|truncatechars:100 }}</a>
+                </div>
+                <hr>
+                <div>
+                    {{ target.html|safe }}
+                </div>
+                <div>
+                    <ul>
+                        {% for file in target.files %}
+                            <li><a href="/media/{{ file }}">{{ file }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}

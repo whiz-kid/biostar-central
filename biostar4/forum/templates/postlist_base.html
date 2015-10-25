@@ -1,0 +1,36 @@
+{% extends 'site_base.html' %}
+
+{% block body %}
+
+    <div class="uk-grid uk-grid-small">
+
+        <div class="uk-width-1-1 uk-width-small-2-3 uk-width-medium-7-9 uk-width-large-8-10" id="main">
+            <div class="block">
+                {% block main %}
+                    Main Content
+                {% endblock %}
+            </div>
+        </div>
+
+        <div class="uk-width-1-1 uk-width-small-1-3 uk-width-medium-2-9 uk-width-large-2-10" id="right">
+            <div class="block">
+                {% block right %}
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
+                    pellentesque accumsan diam non accumsan. Etiam cursus
+                    feugiat dui, et tristique dolor ornare et. Pellentesque sit
+                    amet enim vitae mauris aliquam pellentesque. Praesent non
+                    vehicula nibh. Morbi vel aliquam nunc. Nunc fermentum augue
+                    non lorem dapibus scelerisque. Fusce ut sodales arcu, sit
+                    amet pellentesque est. Morbi ex dolor, varius vitae quam
+                    non, condimentum luctus justo. Nulla condimentum sapien non
+                    metus tincidunt molestie. Donec lectus massa, aliquet sit
+                    amet tincidunt vitae, pulvinar et tellus. Fusce ornare
+                    ornare sem, eget malesuada neque eleifend efficitur. Ut et
+                    maximus turpis. Aliquam eget elementum nisi, quis fringilla
+                    velit. Donec dapibus justo fermentum scelerisque efficitur.
+                    In eu velit eu tortor ultricies lobortis.
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

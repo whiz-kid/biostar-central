@@ -1,0 +1,25 @@
+{% extends 'site_base.html' %}
+{% load widgets %}
+
+{% block title %}Logout{% endblock %}
+
+{% block body %}
+
+    <form method="post" class="uk-form" action="{% url 'logout' %}">
+        <fieldset data-uk-margin>
+
+            <div class="block">Do you want to log out?</div>
+
+            {% form_errors form %}
+
+            <div class="uk-form-row uk-center">
+                {% csrf_token %}
+
+                <button class="uk-button uk-button-success">Log out</button>
+
+            </div>
+        </fieldset>
+
+    </form>
+
+{% endblock %}

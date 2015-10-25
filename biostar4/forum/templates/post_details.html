@@ -1,0 +1,41 @@
+{% extends 'postlist_base.html' %}
+{% load widgets %}
+
+{% block title %}Biostar: {{ post.title }}{% endblock %}
+
+{% block main %}
+
+    <div class="top_post">
+
+        <div>
+            <div class="uk-align-right user_box">
+                {% user_box post.author date=post.lastedit_date %}
+            </div>
+            <div class="post_title uk-margin-bottom">{{ post.title }}</div>
+            <div>{{ post.html|safe }}</div>
+        </div>
+
+        Files: {{ post.files }}
+
+        {% tag_line post %}
+
+        {% notify_bar post=post user=user %}
+
+        <div class="uk-clearfix"></div>
+
+        <div class="post_title">
+            Answers
+        </div>
+        {% for answer in answers %}
+
+            <div class="answer">
+                <div class="uk-align-right user_box">
+                    {% user_box answer.author date=answer.lastedit_date %}
+                </div>
+                <div>{{ answer.html|safe }}</div>
+                <div class="uk-clearfix"></div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'site_base.html' %}
+{% load widgets %}
+
+{% block title %}Reset password{% endblock %}
+
+{% block body %}
+
+    <form method="post" class="uk-form uk-form-stacked" action="{% url 'reset' %}">
+        <fieldset data-uk-margin>
+
+            <div class="block">Enter your email to reset your password.</div>
+
+            {% form_errors form %}
+
+            <div class="uk-form-row">
+                {{ form.email.errors }}
+                <label class="uk-form-label" for="email">Email</label>
+                {{ form.email }}
+                {% csrf_token %}
+            </div>
+
+            {% if captcha %}
+                <div class="uk-form-row">
+                    {{ captcha|safe }}
+                </div>
+            {% endif %}
+
+            <div class="uk-form-row">
+                <button class="uk-button uk-button-success">Send new password</button>
+            </div>
+
+        </fieldset>
+
+    </form>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{% if messages %}
+    <div class="block uk-panel uk-panel-box">
+        <ul class="messagelist">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

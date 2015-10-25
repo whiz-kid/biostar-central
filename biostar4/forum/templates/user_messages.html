@@ -1,0 +1,17 @@
+{% extends 'site_base.html' %}
+{% load humanize %}
+{% load widgets %}
+{% block title %}User List{% endblock %}
+
+{% block body %}
+
+
+    User messages
+
+    {% for message in user.messages %}
+        <div class="message new {{ message.new }}">{{ message.html }}</div>
+    {% endfor %}
+
+    {%  mark_messages user %}
+
+{% endblock %}

@@ -1,0 +1,111 @@
+{% load widgets %}
+
+
+<ul class="uk-subnav uk-subnav-line uk-subnav-pill">
+
+    <li data-uk-dropdown>
+        <a href="#"><i class="uk-icon-bars"></i></a>
+
+        <div class="uk-dropdown uk-dropdown-small">
+            <ul class="uk-nav uk-nav-dropdown">
+                <li><a href="{%  url "post_new" %}">Write New Post</a></li>
+                <li class="uk-nav-divider"></li>
+                <li><a href="#">Topics</a></li>
+                <li><a href="{% url 'user_list' %}">Community</a></li>
+                <li><a href="{% url 'planet' %}">Planet</a></li>
+                <li class="uk-nav-divider"></li>
+                <li><a href="#">About</a></li>
+            </ul>
+        </div>
+    </li>
+
+
+    <li class="{% active request 'home' %}">
+        <a href="{% url 'home' %} ">
+            <i class="uk-icon-home "></i>
+        </a>
+    </li>
+
+    <li class="{% active request 'post_new' %} uk-hidden-small">
+        <a href="{% url "post_new" %}">
+            <span class="uk-hidden-small">Write</span></a>
+    </li>
+
+    <li class="{% active request 'user_list' %} uk-visible-large">
+        <a href="{% url 'user_list' %} ">
+            Community
+        </a>
+    </li>
+
+    <li class="{% active request 'planet' %} uk-hidden-small">
+        <a href="{% url 'planet' %}">
+            Planet
+        </a>
+    </li>
+
+    {% if not user %}
+
+        <li class="{% active request 'login' %}">
+            <a href="{% url 'login' %}"><i class="uk-icon-sign-in"></i> <span
+                    class="uk-hidden-small">Log in</span></a>
+        </li>
+
+        <li class="{% active request 'signup' %}">
+            <a href="{% url 'signup' %}"><i class="uk-icon-arrow-circle-up"></i> <span
+                    class="uk-hidden-small">Sign up</span></a>
+        </li>
+    {% endif %}
+
+    {% if user %}
+
+        <li class="{% active request 'my_site' %} uk-hidden-small">
+            <a href="{% url 'my_site' %}">
+                My Site
+            </a>
+        </li>
+
+        <li class="{% active request 'messages' %}">
+            <a href="{% url 'messages' %}">
+                <span class="{%  notify user.new_messages %}">
+                    <i class="uk-icon-envelope"></i>
+                     <span class="uk-hidden-small">{% plusnum user.new_messages %}</span>
+                </span>
+            </a>
+        </li>
+
+        <li class="{% active request 'votes' %}">
+            <a href="{% url 'votes' %}">
+                <span class="{%  notify user.new_votes %}">
+                    <i class="uk-icon-heart"></i>
+                     <span class="uk-hidden-small">{%  plusnum user.new_votes %}</span>
+                </span>
+            </a>
+        </li>
+
+        <li data-uk-dropdown>
+            <a href="#">
+                <i class="uk-icon-user"></i>
+                <span class="uk-visible-medium">{{ user.name|truncatechars:10 }}</span>
+                <span class="uk-visible-large">{{ user.name|truncatechars:15 }}</span>
+            </a>
+
+            <div class="uk-dropdown uk-dropdown-small">
+                <ul class="uk-nav uk-nav-dropdown">
+                    <li><a href="{% url 'me' %}">View Profile</a></li>
+                    <li><a href="{% url 'user_edit' %}">Edit Profile</a></li>
+                    <li class="uk-nav-divider"></li>
+                    <li><a href="{% url 'my_site' %}">My Site</a></li>
+                    <li><a href="{% url 'my_site' %}">My Posts</a></li>
+                    <li><a href="{% url 'my_site' %}">My Bookmarks</a></li>
+                    <li class="uk-nav-divider"></li>
+                    <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+
+    {% endif %}
+
+
+</ul>
+
