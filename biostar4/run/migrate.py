@@ -2,6 +2,8 @@
 Exports biostar2 into biostar4.
 
 Must be run within a biostar2 instance.
+
+Must be compatible with django 1.6 and django 1.8
 """
 import sys, os, warnings
 import click
@@ -35,6 +37,7 @@ warnings.simplefilter("ignore")
 @click.option('--migrate', is_flag=True, default=False, help='Migrates the data.')
 @click.option('--limit', type=int, default=200, help='Limit to these many users/posts.')
 def main(drop, migrate, limit=200):
+
 
     click.echo("Migration script from biostar2 to biostar4")
     click.echo("MONGODB_NAME: {} ".format(settings.MONGODB_NAME))

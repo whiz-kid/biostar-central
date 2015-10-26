@@ -21,7 +21,7 @@ versions as `python2`, `pip2` and `python3` and `pip3`.
 		cd ~/app/biostar2-central
 		
 		# Set up the migration specific dependencies.
-		pip2 install mongoengine html2text click markdown2
+		pip2 install click markdown2 mongoengine  html2text
 		
 		# Load the environment.
 		source conf/defaults.env 

@@ -2,6 +2,23 @@ from django.shortcuts import render, redirect
 from biostar4.forum import forms
 from biostar4.forum.models import *
 from biostar4.forum import utils
+from biostar4.run import search
+
+@fill_user
+def search_view(request, user):
+    query = request.GET.get('q')
+    if not query:
+        utils.error(request, "please enter a search query")
+        redirect("home")
+
+    result, hits = search.do_search(query)
+    context = dict(
+        user=user,
+        result=result,
+        hits=hits,
+    )
+    return render(request, "search.html", context=context)
+
 
 @fill_post
 def post_details(request, user, post):

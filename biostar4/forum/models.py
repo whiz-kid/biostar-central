@@ -15,7 +15,6 @@ logger = logging.getLogger('biostar')
 
 db = connect(settings.MONGODB_NAME, host=settings.MONGODB_URI)
 
-
 # db.drop_database(settings.MONGODB_NAME)
 
 def login_required(f):
@@ -79,12 +78,6 @@ def parse_tags(text):
     return tags
 
 
-class SearchDoc(dj.Model):
-    "Required for haystack to work"
-    pid = dj.IntegerField(unique=True, primary_key=True)
-    new = dj.BooleanField(db_index=True, default=True)
-    title = dj.CharField(max_length=500)
-    content = dj.CharField(max_length=20000)
 
 
 class Message(EmbeddedDocument):
@@ -263,6 +256,7 @@ class Notify(EmbeddedDocument):
     def __repr__(self):
         return "Notify: {}, ntype:{}".format(self.user, self.ntype)
 
+
 class Post(Document):
     # The maximum number of characters in a post.
     MAX_CHARS = 15000
@@ -403,7 +397,6 @@ class Post(Document):
         ]
     }
 
-
     def url(self):
         uri = reverse("post_detail", kwargs={'pid': self.root.pid})
         return "%s#%s" % (uri, self.pid)
@@ -417,6 +410,7 @@ class Post(Document):
     def remove_notification(post, user):
         Post.objects(pid=post.pid).update_one(pull__notify=Notify(user=user))
 
+
     def save(self, *args, **kwargs):
         now = datetime.now()
         self.creation_date = self.creation_date or now
@@ -427,9 +421,4 @@ class Post(Document):
         self.blurb = self.blurb.strip()
         self.root = self.root or self
         self.parent = self.parent or self
-
-        # Add document to search archive.
-        doc, flag = SearchDoc.objects.get_or_create(pid=self.pid)
-        SearchDoc.objects.filter(pid=self.pid).update(new=True, content=self.text)
-
         super(Post, self).save(*args, **kwargs)

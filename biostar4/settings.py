@@ -43,7 +43,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'haystack',
     'biostar4.forum',
 )
 
@@ -93,10 +92,7 @@ WSGI_APPLICATION = 'biostar4.wsgi.application'
 
 # The database is used only to 'pacify' addons
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'www', 'db', 'biostar.sqlite3'),
-    }
+    'default': { }
 }
 
 LANGUAGE_CODE = 'en-us'
@@ -129,12 +125,7 @@ CACHES = {
     }
 }
 
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': abspath(BASE_DIR, 'www', 'whoosh'),
-    },
-}
+WHOOSH_INDEX = abspath(BASE_DIR, 'www', 'whoosh')
 
 STATIC_ROOT = os.getenv("STATIC_ROOT") or os.path.join(BASE_DIR, "www", "export", "static")
 MEDIA_ROOT = os.getenv("MEDIA_ROOT") or os.path.join(BASE_DIR, "www", "export", "media")
@@ -149,7 +140,7 @@ RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY", "")
 
 # Mongodb settings.
 MONGODB_NAME = os.getenv("MONGODB_NAME", "biostar-test")
-MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017/test")
+MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017/")
 
 # Email settings
 EMAIL_BACKEND = os.getenv(

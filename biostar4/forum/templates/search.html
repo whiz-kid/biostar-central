@@ -1,0 +1,13 @@
+{%  extends 'site_base.html' %}
+
+{% block title %}Planet{% endblock %}
+
+{% block body %}
+
+    Search results:
+
+    {%  for hit in hits %}
+        <p>
+            <a href="{%  url 'post_details' pid=hit.pid %}">{{ hit.title }}</a></p>
+    {% endfor %}
+{%  endblock %}

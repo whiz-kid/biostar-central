@@ -45,8 +45,6 @@ class Command(BaseCommand):
         names = ", ".join(models.db.database_names())
         print("Databases: {}".format(names))
 
-        print (models.User.objects.all())
-
         u_count = models.User.objects.all().count()
         print ("Found {} users in the database".format(u_count))
         sep()

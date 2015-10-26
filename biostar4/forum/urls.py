@@ -10,6 +10,7 @@ urlpatterns = [
 
     url(r'^my_site/$', view_users.my_site, name='my_site'),
     url(r'^me/$', view_users.me, name='me'),
+    url(r'^search/$', view_posts.search_view, name='search_view'),
 
     # User view.
     url(r'^u/(?P<uid>\w+)/$', view_users.user_profile, name="user_profile"),

@@ -30,8 +30,8 @@
 
         {# Search box #}
         <div class="uk-width-1-1 uk-width-small-3-4 search uk-vertical-align">
-            <form class="uk-form uk-width-1-1 uk-width-small-1-2 uk-vertical-align-middle">
-                <input class="search" type="text" placeholder="Search" style="width:100%">
+            <form method="get" class="uk-form uk-width-1-1 uk-width-small-1-2 uk-vertical-align-middle" action="{%  url 'search_view' %}">
+                <input class="search" type="text" name="q" placeholder="Search" style="width:100%">
             </form>
         </div>
 
