@@ -42,6 +42,11 @@ class Command(BaseCommand):
         sep()
         print("Connecting to mongodb ...")
         from biostar4.forum import models
+        names = ", ".join(models.db.database_names())
+        print("Databases: {}".format(names))
+
+        print (models.User.objects.all())
+
         u_count = models.User.objects.all().count()
         print ("Found {} users in the database".format(u_count))
         sep()
@@ -49,6 +54,7 @@ class Command(BaseCommand):
         print("SECRET_KEY: {}".format(settings.SECRET_KEY))
         sep()
         print("EMAIL_BACKEND: {}".format(settings.EMAIL_BACKEND))
+
         #print("SECRET_KEY: {}".format(settings.SECRET_KEY))
 
         if options.get('test_email'):

@@ -9,6 +9,7 @@ from django.shortcuts import redirect
 from biostar4.forum import utils, html
 from functools import wraps
 from django.core.urlresolvers import reverse
+from django.db import models as dj
 
 logger = logging.getLogger('biostar')
 
@@ -76,6 +77,14 @@ def parse_tags(text):
 
     tags = list(map(fixcase, tags))
     return tags
+
+
+class SearchDoc(dj.Model):
+    "Required for haystack to work"
+    pid = dj.IntegerField(unique=True, primary_key=True)
+    new = dj.BooleanField(db_index=True, default=True)
+    title = dj.CharField(max_length=500)
+    content = dj.CharField(max_length=20000)
 
 
 class Message(EmbeddedDocument):
@@ -418,4 +427,9 @@ class Post(Document):
         self.blurb = self.blurb.strip()
         self.root = self.root or self
         self.parent = self.parent or self
+
+        # Add document to search archive.
+        doc, flag = SearchDoc.objects.get_or_create(pid=self.pid)
+        SearchDoc.objects.filter(pid=self.pid).update(new=True, content=self.text)
+
         super(Post, self).save(*args, **kwargs)

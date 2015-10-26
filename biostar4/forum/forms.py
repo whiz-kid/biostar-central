@@ -2,8 +2,8 @@ from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 
-from forum.ext import captcha
-from forum.models import User, Post, parse_tags
+from biostar4.forum.ext import captcha
+from biostar4.forum.models import User, Post, parse_tags
 from biostar4.forum import html
 from django.template.loader import render_to_string
 
