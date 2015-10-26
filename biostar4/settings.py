@@ -43,7 +43,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'haystack',
     'biostar4',
     'biostar4.forum',
 )
@@ -89,14 +88,6 @@ TEMPLATES = [
         },
     },
 ]
-
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': (abspath(BASE_DIR, "www", "search"), 'whoosh_index'),
-    },
-}
 
 WSGI_APPLICATION = 'biostar4.wsgi.application'
 
