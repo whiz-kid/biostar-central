@@ -26,7 +26,10 @@ Test site (may be on or off): http://test.biostars.org
 
 		# To check your settings use:
 		python3 -m biostar4.manage verify
-	
+
+		# To initialize the databases run.
+		python3 -m biostar4.manage migrate
+	 
 		# Run the development server on port 8080.
 		python3 -m biostar4.manage runserver 8080
 	 
