@@ -92,7 +92,10 @@ WSGI_APPLICATION = 'biostar4.wsgi.application'
 
 # The database is used only to 'pacify' addons
 DATABASES = {
-    'default': { }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'www', 'db', 'biostar4.sqlite3'),
+    }
 }
 
 LANGUAGE_CODE = 'en-us'
