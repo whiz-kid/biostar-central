@@ -6,7 +6,7 @@ from biostar4.forum.ext import captcha
 from biostar4.forum.models import User, Post, Profile
 from biostar4.forum import html, utils
 from django.template.loader import render_to_string
-
+from biostar4.forum.utils import parse_tags
 
 class PagedownWidget(forms.Textarea):
     TEMPLATE = "widgets/pagedown_widget.html"
@@ -20,8 +20,9 @@ class PagedownWidget(forms.Textarea):
 def update(obj, form):
     "Sets object attributes from form fields"
     if form.is_valid():
-        for key, value in form.cleaned_data.items():
-            setattr(obj, key, value)
+        for name, value in form.cleaned_data.items():
+            if hasattr(obj, name):
+                setattr(obj, name, value)
     return obj
 
 
@@ -50,7 +51,7 @@ def check_email(email):
 
 
 def check_tags(text):
-    tags = utils.parse_tags(text)
+    tags = parse_tags(text)
     bigs = [tag for tag in tags if len(tag) > 10]
     dups = len(set(tags)) != len(tags)
 
@@ -121,7 +122,7 @@ class UserEditForm(forms.Form):
                               required=False,
                               help_text="Your google scholar id <code>hordfUUAAAAJ</code>")
 
-    website = forms.URLField(label='Website', required=False, initial='',
+    website = forms.CharField(label='Website', required=False, initial='',
                              help_text="The address of your website.")
 
     location = forms.CharField(label='Location', required=False,
@@ -160,18 +161,13 @@ class UserEditForm(forms.Form):
 
     def clean_watched_tags(self):
         text = self.cleaned_data['watched_tags']
-        data = parse_tags(text)
-        return data
+        tags = parse_tags(text)
+        return ",".join(tags)
 
     def clean_my_tags(self):
         text = self.cleaned_data['my_tags']
-        data = parse_tags(text)
-        return data
-
-    def clean_files(self):
-        text = self.cleaned_data['files']
-        data = text.split()
-        return data
+        tags = parse_tags(text)
+        return ",".join(tags)
 
     def clean_email(self):
         text = self.cleaned_data['email']
@@ -248,16 +244,12 @@ class TopLevel(forms.Form):
         text = self.cleaned_data['status']
         return int(text)
 
-    def clean_ptype(self):
-        text = self.cleaned_data['ptype']
+    def clean_type(self):
+        text = self.cleaned_data['type']
         return int(text)
 
     def clean_tags(self):
         text = self.cleaned_data['tags']
-        data = parse_tags(text)
-        return data
+        tags = parse_tags(text)
+        return ",".join(tags)
 
-    def clean_files(self):
-        text = self.cleaned_data['files']
-        data = text.split()
-        return data

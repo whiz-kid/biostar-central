@@ -4,6 +4,10 @@ from django.core.urlresolvers import reverse
 import hashlib
 from urllib.parse import urlencode
 from datetime import datetime, timedelta
+from django.utils import timezone
+
+def now():
+    return timezone.now()
 
 register = Library()
 
@@ -84,7 +88,7 @@ def hide_email(value):
 @register.simple_tag
 def gravatar(user, size=80):
 
-    if user.is_suspended():
+    if user.profile.is_suspended():
         # Removes spammy images for suspended users
         email = b'suspended@biostars.org'
     else:
@@ -109,7 +113,7 @@ def time_ago(date):
     # Rare bug. TODO: Need to investigate why this can happen.
     if not date:
         return ''
-    delta = datetime.now() - date
+    delta = now() - date
     if delta < timedelta(minutes=1):
         return 'just now'
     elif delta < timedelta(hours=1):

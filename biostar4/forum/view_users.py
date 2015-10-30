@@ -7,26 +7,26 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import authenticate, login, logout
 
 @login_required
+@fill_user
 def me(request, user):
-    return redirect("user_profile", uid=user.uid)
+    return redirect("user_profile", uid=user.id)
 
 
 @login_required
+@fill_user
 def my_site(request, user):
-    posts = Post.objects.filter(ptype__in=Post.TOP_LEVEL, author=user).exclude("html").order_by('lastedit_date')[:100]
+    #posts = Post.objects.filter(ptype__in=Post.TOP_LEVEL, author=user).exclude("html").order_by('lastedit_date')[:100]
+    posts = []
     context = dict(
         user=user,
         posts=posts
     )
-    user.add_message("Creating random message at timestamp %s" % datetime.now())
-    user.new_votes += 1
-    user.save()
     return render(request, "user_mysite.html", context=context)
 
 
 @fill_user
 def user_profile(request, user, uid):
-    target = User.objects.filter(uid=uid).first()
+    target = User.objects.filter(pk=uid).select_related('profile').first()
     if not target:
         utils.error(request, "The user cannot be found.")
         return redirect("home")
@@ -40,7 +40,8 @@ def user_profile(request, user, uid):
 
 @fill_user
 def user_list(request, user):
-    users = User.objects.all()[:100].exclude("messages", "text", "html", "files").order_by('-last_login')
+    #users = User.objects.all()[:100].defer("profile__text", "profile__html", "profile__files").order_by('-last_login')
+    users = User.objects.all()[:100].select_related("profile")
     context = dict(
         user=user,
         users=users,
@@ -69,6 +70,7 @@ def votes(request, user):
 
 
 @login_required
+@fill_user
 def user_edit(request, user):
     if request.method == 'POST':
         fs = FileSystemStorage()
@@ -85,15 +87,16 @@ def user_edit(request, user):
 
         if form.is_valid():
             # This will be used to remove files if needed.
-            old_files = list(user.files)
+            old_files = list(user.profile.files)
 
             # Update the user attributes from the form.
             user = forms.update(user, form)
+            user.profile = forms.update(user.profile, form)
 
             # Delete files that the user removed
             for path in old_files:
                 path = path.strip()
-                if path not in user.files:
+                if path not in user.profile.files:
                     fs.delete(path)
 
             # Handle the uploaded files.
@@ -106,21 +109,23 @@ def user_edit(request, user):
                 user.files.append(key)
 
             user.save()
-            return redirect("user_profile", uid=user.uid)
+            user.profile.save()
+            return redirect("user_profile", uid=user.id)
 
     else:
+        profile = user.profile
         initial = dict(
-            name=user.name,
+            name=profile.name,
             email=user.email,
             username=user.username,
-            twitter=user.twitter,
-            scholar=user.scholar,
-            text=user.text,
-            location=user.location,
-            website=user.website,
-            my_tags=','.join(user.my_tags),
-            watched_tags=','.join(user.watched_tags),
-            files=" \n".join(user.files)
+            twitter=profile.twitter,
+            scholar=profile.scholar,
+            text=profile.text,
+            location=profile.location,
+            website=profile.website,
+            my_tags=','.join(profile.my_tags),
+            watched_tags=','.join(profile.watched_tags),
+            files=" \n".join(profile.files)
         )
         form = forms.UserEditForm(user, initial=initial)
 

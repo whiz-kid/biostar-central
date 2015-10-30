@@ -3,6 +3,28 @@ This file must remain Python 2.7 compatible to allow imports from Biostar 2.
 """
 import time, base64, hashlib, binascii, hmac, json, logging, uuid
 from django.contrib import messages
+from django.utils import timezone
+
+
+def now():
+    return timezone.now()
+
+
+def parse_tags(text):
+    "Parses tags as comma or space separated"
+
+    # Figure out split character.
+    tags = text.split(",")
+    if len(tags) == 1:
+        tags = text.split()
+    tags = [t.strip()[:12] for t in tags]
+    tags = filter(None, tags)
+    # Fix tag case.
+    def fixcase(x):
+        return x.lower() if len(x) > 1 else x.upper()
+
+    tags = list(map(fixcase, tags))
+    return tags
 
 
 def info(request, text):
@@ -22,4 +44,4 @@ def encrypt(text):
 
 
 def get_uuid():
-     return str(uuid.uuid4())
+    return str(uuid.uuid4())

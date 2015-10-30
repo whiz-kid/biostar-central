@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^search/$', view_posts.search_view, name='search_view'),
 
     # User view.
-    url(r'^u/(?P<uid>\w+)/$', view_users.user_profile, name="user_profile"),
+    url(r'^u/(?P<uid>\d+)/$', view_users.user_profile, name="user_profile"),
     url(r'^messages/$', views_main.messages, name='messages'),
 
     # Post related actions
@@ -37,9 +37,9 @@ urlpatterns = [
     url(r'^user/votes/$', view_users.votes, name='votes'),
 
     # Account related urls
-    url(r'^signup/$', view_users.signup, name='signup'),
-    url(r'^login/$', view_users.user_login, name='login'),
-    url(r'^logout/$', view_users.user_logout, name='logout'),
+    url(r'^accounts/signup/$', view_users.signup, name='signup'),
+    url(r'^accounts/login/$', view_users.user_login, name='login'),
+    url(r'^accounts/logout/$', view_users.user_logout, name='logout'),
     url(r'^reset/$', view_users.reset, name='reset'),
 
     # Debug

@@ -1,11 +1,11 @@
 {% load widgets %}
 
 <div class="uk-overflow-container uk-text-center">
-    <a href="{% url "user_profile" uid=target.uid %}">
+    <a href="{% url "user_profile" uid=target.id %}">
         <img class="uk-border-circle" src="{% gravatar user=target size=size %}" alt="">
 
         <div class="uk-text-center">
-            {{ target.name }}
+            {{ target.profile.name }}
         </div>
     </a>
 
@@ -15,7 +15,7 @@
 </div>
 
 <div class="uk-text-muted uk-text-center">
-    {{ target.location }}
+    {{ target.profile.location }}
 </div>
 <div class="uk-text-muted uk-text-center">
     {{ date|time_ago }} ago

@@ -5,7 +5,7 @@
 {% block title %}Me{% endblock %}
 
 {% block body %}
-
+{% with profile=target.profile %}
     <div class="uk-grid top">
 
 
@@ -17,9 +17,9 @@
 
         <div class="uk-width-1-1 uk-width-medium-3-4 uk-overflow-container">
 
-            <div>{{ target.get_role }}: {{ target.name }} </div>
+            <div>{{ profile.get_role }}: {{ profile.name }} </div>
 
-            <div>Status: {{ target.get_access }} &bull; Email
+            <div>Status: {{ profile.get_access }} &bull; Email
 
                 {% if user == target %}
                     ({{ target.email }})
@@ -30,30 +30,30 @@
             <div class="uk-texts-muted">
 
                 <div>
-                    Score: {{ target.score }} &bull;
-                    Posts: {{ target.post_num }}
+                    Score: {{ profile.score }} &bull;
+                    Posts: {{ profile.post_num }}
                 </div>
 
                 <div>
 
                     Username: <b>@{{ target.username }}</b>
 
-                    {% if target.scholar %}
+                    {% if profile.scholar %}
                         &bull;
-                        <a href="http://scholar.google.com/citations?user={{ target.scholar }}">
+                        <a href="http://scholar.google.com/citations?user={{ profile.scholar }}">
                             <i class="uk-icon-book"></i> Google Scholar</a>
                     {% endif %}
 
-                    {% if target.twitter %}
+                    {% if profile.twitter %}
                         &bull; Twitter:
-                        <a href="http://twitter.com/{{ target.twitter }}">
-                            <i class="uk-icon-twitter"></i>{{ target.twitter }}</a>
+                        <a href="http://twitter.com/{{ profile.twitter }}">
+                            <i class="uk-icon-twitter"></i>{{ profile.twitter }}</a>
                     {% endif %}
 
                 </div>
 
                 <div>
-                    Location: {{ target.location }}
+                    Location: {{ profile.location }}
                 </div>
 
                 <div>
@@ -65,16 +65,16 @@
                 </div>
 
                 <div>
-                    Web: <a href="{{ target.website }}" rel="nofollow">
-                    {{ target.website|truncatechars:100 }}</a>
+                    Web: <a href="{{ profile.website }}" rel="nofollow">
+                    {{ profile.website|truncatechars:100 }}</a>
                 </div>
                 <hr>
                 <div>
-                    {{ target.html|safe }}
+                    {{ profile.html|safe }}
                 </div>
                 <div>
                     <ul>
-                        {% for file in target.files %}
+                        {% for file in profile.files %}
                             <li><a href="/media/{{ file }}">{{ file }}</a></li>
                         {% endfor %}
                     </ul>
@@ -83,6 +83,6 @@
         </div>
     </div>
 
-
+{%  endwith %}
 
 {% endblock %}
