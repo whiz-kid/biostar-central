@@ -4,6 +4,7 @@ from biostar4.forum.models import *
 from biostar4.forum import utils
 from biostar4.run import search
 
+
 @fill_user
 def search_view(request, user):
     query = request.GET.get('q')
@@ -21,8 +22,8 @@ def search_view(request, user):
 
 
 def post_details(request, user, post):
-
-    answers = Post.objects.filter(parent=post, ptype=Post.ANSWER).order_by('-vote_count', 'creation_date')
+    answers = Post.objects.filter(parent=post, ptype=Post.ANSWER).order_by('-vote_count',
+                                                                           'creation_date')
 
     context = dict(
         user=user,
@@ -33,17 +34,21 @@ def post_details(request, user, post):
 
 
 @login_required
+@fill_user
 def post_new(request, user):
-
     if request.method == 'POST':
         form = forms.TopLevel(request.POST, request.FILES)
         # Save uploaded file.
         stream = request.FILES.get('upload')
         if form.is_valid():
-            post = forms.update(Post(author=user), form)
+            get = form.cleaned_data.get
+            title, text, ptype = get('title'), get('text'), get('type')
+            tag_val, status = get('tags'), get('status')
+            post = Post(title=title, text=text, type=ptype, author=user,
+                        lastedit_user=user,
+                        status=status, tag_val=tag_val)
             post.save()
-            post.add_notification(user)
-            return redirect("post_details", pid=post.pid)
+            return redirect("post_details", pid=post.id)
     else:
         form = forms.TopLevel()
 
@@ -54,6 +59,7 @@ def post_new(request, user):
     )
 
     return render(request, "post_new.html", context=context)
+
 
 @fill_user
 def planet_list(request, user):

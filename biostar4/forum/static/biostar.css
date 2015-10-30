@@ -8,6 +8,10 @@ body {
     margin-top: 5px;
 }
 
+.form_bg{
+    background-color: #eeeeee;
+}
+
 .boxes {
     margin-right: 5px;
     width: 7em;

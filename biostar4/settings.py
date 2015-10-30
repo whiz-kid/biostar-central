@@ -1,10 +1,8 @@
 """
 """
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 def abspath(*args):
     return os.path.abspath(os.path.join(*args))
@@ -36,17 +34,19 @@ else:
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost www.lvh.me 127.0.0.1").split()
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.sites',
+    'taggit',
     'biostar4.forum.apps.Biostar4',
-)
+]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -56,7 +56,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'biostar4.middleware.BiostarMiddleware',
-)
+]
 
 ROOT_URLCONF = 'biostar4.urls'
 
@@ -89,6 +89,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'biostar4.wsgi.application'
+
+TAGGIT_CASE_INSENSITIVE = True
 
 # The database is used only to 'pacify' addons
 DATABASES = {

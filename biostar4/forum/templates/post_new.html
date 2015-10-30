@@ -1,6 +1,6 @@
 {% extends 'site_base.html' %}
 {% load widgets %}
-{%  load static %}
+{% load static %}
 
 {% block title %}New Post{% endblock %}
 
@@ -13,51 +13,42 @@
     {#  Markdown editor style #}
     <link rel="stylesheet" href={% static "lib/pagedown/markdown.css" %}>
 
-{%  endblock %}
+{% endblock %}
 
 {% block body %}
 
-    <form method="post" enctype="multipart/form-data"  class="uk-form uk-form-stacked uk-width-1-1"
+    <form method="post" enctype="multipart/form-data" class="uk-form uk-form-stacked uk-width-1-1"
           action="{% url 'post_new' %}">
 
-        <div class="block uk-text-center">
+        <div class="block">
             <h2>{{ form_title }}</h2>
         </div>
-        <div class="uk-grid">
 
+        <div class="uk-width-1-1 uk-width-medium-2-4 uk-panel-box form_bg">
 
-            <div class="uk-width-1-1 uk-width-medium-1-4">&nbsp;</div>
+            {% form_errors form %}
 
-            <div class="uk-width-1-1 uk-width-medium-2-4 uk-panel-box">
+            {% for field in form %}
+                <div>
+                    {{ field.errors }}
+                    <label class="uk-form-label"
+                           for="{{ field.name }}">{{ field.label_tag }}</label>
 
-                {% form_errors form %}
-
-                {% for field in form %}
-                    <div class="uk-form-row">
-                        {{ field.errors }}
-                        <label class="uk-form-label"
-                               for="{{ field.name }}">{{ field.label_tag }}</label>
-
-                        {{ field }}
-                        {% if field.help_text %}
-                            <p class="uk-form-help-block uk-text-muted">
-                                {{ field.help_text|safe }}
-                            </p>
-                        {% endif %}
-                     <hr>
-                    </div>
-                {% endfor %}
-
-                <div class="uk-form-row user_edit">
-                    <button class="uk-button uk-button-success uk-margin-top">Submit</button>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="uk-form-help-block">
+                            {{ field.help_text|safe }}
+                        </p>
+                    {% endif %}
+                    <hr>
                 </div>
+            {% endfor %}
 
-                {% csrf_token %}
-
-
+            <div class="uk-form-row user_edit">
+                <button class="uk-button uk-button-success uk-margin-top">Submit</button>
             </div>
 
-        </div>
+            {% csrf_token %}
 
 
     </form>

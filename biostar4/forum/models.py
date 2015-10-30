@@ -3,6 +3,9 @@ from . import html
 from django.contrib.auth.models import User
 from functools import wraps
 from django.contrib.auth.decorators import login_required
+from taggit.managers import TaggableManager
+from django.contrib.sites.models import Site
+from django.utils import timezone
 
 def fill_user(f):
     """
@@ -20,8 +23,7 @@ def create_user(email, password):
     user = User(email=email)
     user.set_password(password)
     user.save()
-    # Need to refetch it to get the apply results of
-    # of signals.
+    # Need to refetch the user because signals may altered the profile.
     user = User.objects.get(pk=user.pk)
     return user
 
@@ -84,6 +86,8 @@ class Profile(Model):
     text = CharField(max_length=3000, default='')
     html = CharField(max_length=6000, default='')
 
+    tags = TaggableManager()
+
     def save(self, *args, **kwargs):
         self.html = html.sanitize(self.text)
         super(Profile, self).save(*args, **kwargs)
@@ -94,10 +98,11 @@ class FastManager(Manager):
 
 
 class Post(Model):
-
-    fast = FastManager()
-
+    # Maximal character size for a post.
     MAX_CHARS = 15000
+
+    # A manager to get a reduced amount of filed on posts.
+    fast = FastManager()
 
     DRAFT, PENDING, PUBLISHED, CLOSED, DELETED = [1, 2, 3, 4, 5]
 
@@ -109,11 +114,12 @@ class Post(Model):
         (DELETED, "Deleted"),
     ]
 
+    STATUS_CHOICE_MAP = dict(STATUS_CHOICES)
     # The status of the post.
     status = IntegerField(choices=STATUS_CHOICES, default=PUBLISHED)
 
     def get_status(self):
-        return self.STATUS_CHOICES.get(self.status, "???")
+        return self.STATUS_CHOICE_MAP.get(self.status, "???")
 
     # Valid post types.
     QUESTION, ANSWER, COMMENT, TUTORIAL, FORUM, JOB, TOOL, NEWS = range(1, 9)
@@ -132,18 +138,76 @@ class Post(Model):
     # Top level posts.
     TOP_LEVEL = {QUESTION, FORUM, TOOL, TUTORIAL, NEWS}
 
+    # The type of the post.
     type = IntegerField(choices=POST_TYPES, default=FORUM)
 
+    # AUthor of the post.
     author = ForeignKey(User)
 
-    # How many posts has the user created.
-    post_num = IntegerField(default=0)
+    # The tag value is the canonical form of the post's tags
+    tag_val = CharField(max_length=200, default='')
 
-    # New messages for this user.
-    new_messages = IntegerField(default=0)
+    # The tag manager for the post
+    tags = TaggableManager()
 
-    # New votes for the user.
-    new_votes = IntegerField(default=0)
+    # Post title.
+    title = CharField(max_length=250, null=False)
 
-    # New posts for the user.
-    new_posts = IntegerField(default=0)
+    # A unique id for the post.
+    uuid = CharField(max_length=256, null=True)
+
+    # The user that edited the post most recently.
+    lastedit_user = ForeignKey(User, related_name='editor', null=True)
+
+    # Indicates the information value of the post.
+    rank = FloatField(default=0, blank=True)
+
+    # Number of upvotes for the post
+    vote_count = IntegerField(default=0, blank=True, db_index=True)
+
+    # The number of views for the post.
+    view_count = IntegerField(default=0, blank=True)
+
+    # The number of replies that a post has.
+    reply_count = IntegerField(default=0, blank=True)
+
+    # The number of comments that a post has.
+    comment_count = IntegerField(default=0, blank=True)
+
+    # Bookmark count.
+    book_count = IntegerField(default=0)
+
+    # Indicates indexing is needed.
+    changed = BooleanField(default=True)
+
+    # How many people follow that thread.
+    subs_count = IntegerField(default=0)
+
+    # The total score of the thread (used for top level only)
+    thread_score = IntegerField(default=0, blank=True, db_index=True)
+
+    # Date related fields.
+    creation_date = DateTimeField(db_index=True, default=timezone.now)
+    lastedit_date = DateTimeField(db_index=True, default=timezone.now)
+    last_activity = DateTimeField(db_index=True, default=timezone.now)
+
+    # Stickiness of the post.
+    sticky = BooleanField(default=False, db_index=True)
+
+    # Indicates whether the post has accepted answer.
+    has_accepted = BooleanField(default=False, blank=True)
+
+    # This will maintain the ancestor/descendant relationship bewteen posts.
+    root = ForeignKey('self', related_name="descendants", null=True, blank=True)
+
+    # This will maintain parent/child replationships between posts.
+    parent = ForeignKey('self', null=True, blank=True, related_name='children')
+
+    # This is the HTML that the user enters.
+    text = TextField(default='')
+
+    # This is the  HTML that gets displayed.
+    html = TextField(default='')
+
+    # What site does the post belong to.
+    site = ForeignKey(Site, null=True)

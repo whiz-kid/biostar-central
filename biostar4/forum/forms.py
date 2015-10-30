@@ -159,16 +159,6 @@ class UserEditForm(forms.Form):
                            max_length=3000,
                            help_text="Introduce yourself to others (markdown ok)")
 
-    def clean_watched_tags(self):
-        text = self.cleaned_data['watched_tags']
-        tags = parse_tags(text)
-        return ",".join(tags)
-
-    def clean_my_tags(self):
-        text = self.cleaned_data['my_tags']
-        tags = parse_tags(text)
-        return ",".join(tags)
-
     def clean_email(self):
         text = self.cleaned_data['email']
         if text != self.user.email and User.objects(email=text):
@@ -215,7 +205,7 @@ class TopLevel(forms.Form):
                            widget=forms.TextInput(attrs={'class': 'uk-width-1-1'}),
                            help_text="Post tags, for example: rna-seq Separate multiple tags with commas")
 
-    ptype = forms.ChoiceField(label="Post type", choices=POST_TYPES,
+    type = forms.ChoiceField(label="Post type", choices=POST_TYPES,
                               initial=Post.PUBLISHED, help_text="Select a post type.",
                               )
 
@@ -247,9 +237,4 @@ class TopLevel(forms.Form):
     def clean_type(self):
         text = self.cleaned_data['type']
         return int(text)
-
-    def clean_tags(self):
-        text = self.cleaned_data['tags']
-        tags = parse_tags(text)
-        return ",".join(tags)
 

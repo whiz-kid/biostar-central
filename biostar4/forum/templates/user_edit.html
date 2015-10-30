@@ -27,19 +27,19 @@
 
             <div class="uk-width-1-1 uk-width-medium-1-4">&nbsp;</div>
 
-            <div class="uk-width-1-1 uk-width-medium-2-4  uk-panel-box">
+            <div class="uk-width-1-1 uk-width-medium-2-4 uk-panel-box form_bg">
 
                 {% form_errors form %}
 
                 {% for field in form %}
-                    <div class="uk-form-row">
+                    <div>
                         {{ field.errors }}
                         <label class="uk-form-label"
                                for="{{ field.name }}">{{ field.label_tag }}</label>
 
                         {{ field }}
                         {% if field.help_text %}
-                            <p class="uk-form-help-block uk-text-muted">
+                            <p class="uk-form-help-block">
                                 {{ field.help_text|safe }}
                             </p>
                         {% endif %}
