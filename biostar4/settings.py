@@ -43,7 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'biostar4.forum',
+    'biostar4.forum.apps.Biostar4',
 )
 
 MIDDLEWARE_CLASSES = (

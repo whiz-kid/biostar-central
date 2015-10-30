@@ -20,7 +20,6 @@ def search_view(request, user):
     return render(request, "search.html", context=context)
 
 
-@fill_post
 def post_details(request, user, post):
 
     answers = Post.objects.filter(parent=post, ptype=Post.ANSWER).order_by('-vote_count', 'creation_date')

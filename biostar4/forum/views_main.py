@@ -1,15 +1,14 @@
 from django.shortcuts import render, redirect, HttpResponse
-from biostar4.forum import forms
+from biostar4.forum import forms, utils
 from biostar4.forum.models import *
-from biostar4.forum import utils
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
+
 @fill_user
 def home(request, user):
 
     #posts = Post.objects.filter(ptype__in=Post.TOP_LEVEL).exclude("html").order_by('-lastedit_date')[:100]
 
-    posts = Post.fast.filter(ptype__in=Post.TOP_LEVEL).exclude("html").order_by('-lastedit_date')[:100]
-
+    posts = Post.fast.filter()[:100]
 
     context = dict(
         user=user,

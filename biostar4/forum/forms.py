@@ -3,14 +3,9 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 
 from biostar4.forum.ext import captcha
-from biostar4.forum.models import User, Post, parse_tags
-from biostar4.forum import html
+from biostar4.forum.models import User, Post, Profile
+from biostar4.forum import html, utils
 from django.template.loader import render_to_string
-
-
-# forms.TextInput(
-# attrs={'class': "wmd-input", 'id': 'wmd-input',
-# 'placeholder': 'Type your post here'}),
 
 
 class PagedownWidget(forms.Textarea):
@@ -55,7 +50,7 @@ def check_email(email):
 
 
 def check_tags(text):
-    tags = parse_tags(text)
+    tags = utils.parse_tags(text)
     bigs = [tag for tag in tags if len(tag) > 10]
     dups = len(set(tags)) != len(tags)
 
@@ -68,11 +63,11 @@ def check_tags(text):
 
 
 def user_file_check(upload):
-    if upload and upload.size > (User.MAX_FILE_SIZE * 1024 * 1024):
+    if upload and upload.size > (Profile.MAX_FILE_SIZE * 1024 * 1024):
         this_size = upload.size / 1024 / 1024
         raise forms.ValidationError(
             'File size of {:.0f} MB is larger than maximum allowed {:d} MB ' \
-                .format(this_size, User.MAX_FILE_SIZE))
+                .format(this_size, Profile.MAX_FILE_SIZE))
 
 
 class SignupForm(forms.Form):
@@ -147,14 +142,14 @@ class UserEditForm(forms.Form):
     upload = forms.FileField(label="Attach new file", required=False,
                              validators=[user_file_check],
                              help_text="This file will be shown on your profile. Max size: {} Mb".format(
-                                 User.MAX_FILE_SIZE),
+                                 Profile.MAX_FILE_SIZE),
                              )
 
     files = forms.CharField(label="Previously attached files",
                             widget=forms.Textarea(
                                 attrs={'rows': '3', 'class': 'uk-width-1-1'}),
                             help_text="Removing a name deletes the file. Max number of files: {}".format(
-                                User.MAX_FILE_SIZE),
+                                Profile.MAX_FILE_SIZE),
                             required=False)
 
     text = forms.CharField(label="About me",

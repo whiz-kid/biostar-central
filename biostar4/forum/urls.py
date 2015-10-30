@@ -38,8 +38,8 @@ urlpatterns = [
 
     # Account related urls
     url(r'^signup/$', view_users.signup, name='signup'),
-    url(r'^login/$', view_users.login, name='login'),
-    url(r'^logout/$', view_users.logout, name='logout'),
+    url(r'^login/$', view_users.user_login, name='login'),
+    url(r'^logout/$', view_users.user_logout, name='logout'),
     url(r'^reset/$', view_users.reset, name='reset'),
 
     # Debug

@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from biostar4.forum import forms, utils
 from biostar4.forum.models import *
 from django.core.files.storage import FileSystemStorage
-
+from django.contrib.auth import authenticate, login, logout
 
 @login_required
 def me(request, user):
@@ -150,13 +150,13 @@ def reset(request):
     return render(request, "account/reset.html", context=context)
 
 
-def logout(request):
-    user = User.get(request)
+@fill_user
+def user_logout(request, user):
 
     if request.method == 'POST':
         form = forms.LogoutForm(request.POST)
         if form.is_valid():
-            User.logout(request)
+            logout(request)
             utils.info(request, "Logout successful")
             return redirect("home")
     else:
@@ -168,8 +168,7 @@ def logout(request):
     return render(request, "account/logout.html", context=context)
 
 
-def login(request):
-    user = User.get(request)
+def user_login(request):
 
     if request.method == 'POST':
         form = forms.LoginForm(request.POST)
@@ -179,19 +178,32 @@ def login(request):
             form.add_error(None, message)
 
         if form.is_valid():
-            user = User.objects.get(email=form.cleaned_data['email'])
-            if user.is_suspended():
-                utils.error(request, "This account has been suspended!")
-            else:
-                user.login(request)
-                utils.info(request, "Login successful.")
-            return redirect("home")
+            email =  form.cleaned_data['email']
+            password = form.cleaned_data['password']
 
+            user = User.objects.filter(email=email).first()
+
+            if not user:
+                utils.error(request, "Invalid email or password")
+                return redirect("login")
+
+            user = authenticate(username=user.username, password=password)
+
+            if not user:
+                utils.error(request, "Invalid email or password")
+                return redirect("login")
+
+            if not user.is_active:
+                utils.error(request, "This user account has been inactivated")
+                return redirect("login")
+
+            login(request, user)
+            utils.info(request, "Login successful")
+            return redirect("home")
     else:
         form = forms.LoginForm()
 
     context = dict(
-        user=user,
         form=form,
         captcha=forms.get_captcha_field()
     )
@@ -200,7 +212,6 @@ def login(request):
 
 
 def signup(request):
-    user = User.get(request)
 
     # User.objects.all().delete()
 
@@ -217,11 +228,9 @@ def signup(request):
             get = form.cleaned_data.get
             email = get('email')
             password = get('password')
-            name = email.split('@')[0]
-            user = User(email=email, name=name)
-            user.set_password(password)
-            user.save()
-            user.login(request)
+            user = create_user(email=email, password=password)
+            user = authenticate(username=user.username, password=password)
+            login(request, user)
             utils.info(request, "Sign up successful")
             return redirect("home")
 
@@ -229,7 +238,6 @@ def signup(request):
         form = forms.SignupForm()
 
     context = dict(
-        user=user,
         form=form,
         captcha=forms.get_captcha_field()
     )

@@ -196,7 +196,7 @@ def migrate_users(dest, limit):
             password=d['password'],
             score=d['score'],
             text=text,
-            date_joined=d['date_joined'],
+            #date_joined=d['date_joined'],
             last_login=d['last_login'],
             scholar=d['scholar'],
             twitter=d['twitter'],

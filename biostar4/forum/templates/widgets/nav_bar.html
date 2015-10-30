@@ -43,7 +43,7 @@
         </a>
     </li>
 
-    {% if not user %}
+    {% if user.is_anonymous %}
 
         <li class="{% active request 'login' %}">
             <a href="{% url 'login' %}"><i class="uk-icon-sign-in"></i> <span
@@ -56,7 +56,7 @@
         </li>
     {% endif %}
 
-    {% if user %}
+    {% if user.is_authenticated %}
 
         <li class="{% active request 'my_site' %} uk-hidden-small">
             <a href="{% url 'my_site' %}">
@@ -66,18 +66,18 @@
 
         <li class="{% active request 'messages' %}">
             <a href="{% url 'messages' %}">
-                <span class="{%  notify user.new_messages %}">
+                <span class="{%  notify user.profile.new_messages %}">
                     <i class="uk-icon-envelope"></i>
-                     <span class="uk-hidden-small">{% plusnum user.new_messages %}</span>
+                     <span class="uk-hidden-small">{% plusnum user.profile.new_messages %}</span>
                 </span>
             </a>
         </li>
 
         <li class="{% active request 'votes' %}">
             <a href="{% url 'votes' %}">
-                <span class="{%  notify user.new_votes %}">
+                <span class="{%  notify user.profile.new_votes %}">
                     <i class="uk-icon-heart"></i>
-                     <span class="uk-hidden-small">{%  plusnum user.new_votes %}</span>
+                     <span class="uk-hidden-small">{%  plusnum user.profile.new_votes %}</span>
                 </span>
             </a>
         </li>
@@ -85,8 +85,8 @@
         <li data-uk-dropdown>
             <a href="#">
                 <i class="uk-icon-user"></i>
-                <span class="uk-visible-medium">{{ user.name|truncatechars:10 }}</span>
-                <span class="uk-visible-large">{{ user.name|truncatechars:15 }}</span>
+                <span class="uk-visible-medium">{{ user.profile.name|truncatechars:10 }}</span>
+                <span class="uk-visible-large">{{ user.profile.name|truncatechars:15 }}</span>
             </a>
 
             <div class="uk-dropdown uk-dropdown-small">

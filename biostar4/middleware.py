@@ -12,9 +12,10 @@ class BiostarMiddleware(object):
 
     def process_request(self, request):
 
+        return
+
         # Add the user to each request.
-        user = User.get(request)
-        request.user = user
+        user = request.user = user
 
         # Suspended users are logged out immediately.
         if user and user.is_suspended():
