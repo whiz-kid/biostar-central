@@ -19,7 +19,7 @@ urlpatterns = [
     # Post related actions
     url(r'^post/new/$', view_posts.post_new, name='post_new'),
 
-    url(r'^p/(?P<pid>\w+)/$', view_posts.post_details, name="post_details"),
+    url(r'^p/(?P<pid>\d+)/$', view_posts.post_details, name="post_details"),
 
     # Planet.
     url(r'^planet/$', view_posts.planet_list, name='planet'),

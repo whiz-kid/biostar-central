@@ -1,17 +1,14 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from django.core import mail
+from biostar4.forum.models import *
 
 import os
 
-def sep():
-    print('---------------------')
-
-
 def test_email():
-    sep()
+    print('---------------------')
     print ("Sending a test email ...")
-    sep()
+    print('---------------------')
     with mail.get_connection() as connection:
         subject = "This is a test message from Biostar"
         body = "If you can read this then the server can send emails."
@@ -31,26 +28,18 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         setting_module = os.getenv('DJANGO_SETTINGS_MODULE')
-        sep()
+        print('---------------------')
         print("DJANGO_SETTINGS_MODULE: {}".format(setting_module))
         print("DEBUG: {}".format(settings.DEBUG))
         print("TEMPLATE_DIRS: {}".format(settings.TMPL_DIRS))
         print("STATICFILES_DIRS: {}".format(settings.STATICFILES_DIRS))
-        sep()
-        print("MONGODB_NAME: {}".format(settings.MONGODB_NAME))
-        print("MONGODB_URI: {}".format(settings.MONGODB_URI))
-        sep()
-        print("Connecting to mongodb ...")
-        from biostar4.forum import models
-        names = ", ".join(models.db.database_names())
-        print("Databases: {}".format(names))
 
-        u_count = models.User.objects.all().count()
+        u_count = User.objects.all().count()
         print ("Found {} users in the database".format(u_count))
-        sep()
+        print('---------------------')
         print("RECAPTCHA_ENABLED: {}".format(settings.RECAPTCHA_ENABLED))
         print("SECRET_KEY: {}".format(settings.SECRET_KEY))
-        sep()
+        print('---------------------')
         print("EMAIL_BACKEND: {}".format(settings.EMAIL_BACKEND))
 
         #print("SECRET_KEY: {}".format(settings.SECRET_KEY))

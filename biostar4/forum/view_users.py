@@ -5,6 +5,7 @@ from biostar4.forum import forms, utils
 from biostar4.forum.models import *
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import authenticate, login, logout
+from biostar4.forum.decorators import *
 
 @login_required
 @fill_user

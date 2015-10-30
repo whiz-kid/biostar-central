@@ -1,15 +1,15 @@
 {%  load widgets %}
 <div class="tag_bar">
-    {% for tag in post.tags %}
+    {% for tag in post.tags.all %}
         <span class="tag">{{ tag }}</span>
     {% endfor %}
 </div>
 
 <div class="uk-text-muted">
     posted {{ post.creation_date|time_ago }} ago by <a
-        href="{% url "user_profile" uid=post.author.uid %}">{{ post.author.name }}</a>
+        href="{% url "user_profile" uid=post.author_id %}">{{ post.author.profile.name }}</a>
     {% if post.lastedit_user %}
         &bull; thread updated {{ post.lastedit_date|time_ago }} ago
-        by <a href="{% url "user_profile" uid=post.lastedit_user.uid %}">{{ post.lastedit_user.name }}</a>
+        by <a href="{% url "user_profile" uid=post.lastedit_user_id %}">{{ post.lastedit_user.profile.name }}</a>
     {% endif %}
 </div>

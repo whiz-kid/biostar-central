@@ -1,23 +1,10 @@
 from django.db.models import *
 from . import html
 from django.contrib.auth.models import User
-from functools import wraps
-from django.contrib.auth.decorators import login_required
 from taggit.managers import TaggableManager
 from django.contrib.sites.models import Site
 from django.utils import timezone
 
-def fill_user(f):
-    """
-    Fills the user parameter on a wrapped function
-    """
-
-    @wraps(f)
-    def decorated_function(request, *args, **kwargs):
-        user = request.user
-        return f(request, user, *args, **kwargs)
-
-    return decorated_function
 
 def create_user(email, password):
     user = User(email=email)
@@ -69,7 +56,6 @@ class Profile(Model):
     def is_suspended(self):
         return self.access != self.ACTIVE
 
-
     user = OneToOneField(User)
     name = CharField(max_length=100, default="User")
     score = IntegerField(default=0)
@@ -92,6 +78,7 @@ class Profile(Model):
         self.html = html.sanitize(self.text)
         super(Profile, self).save(*args, **kwargs)
 
+
 class FastManager(Manager):
     def get_queryset(self):
         return super(FastManager, self).get_queryset().filter()
@@ -103,6 +90,7 @@ class Post(Model):
 
     # A manager to get a reduced amount of filed on posts.
     fast = FastManager()
+    objects = Manager()
 
     DRAFT, PENDING, PUBLISHED, CLOSED, DELETED = [1, 2, 3, 4, 5]
 
@@ -137,6 +125,9 @@ class Post(Model):
 
     # Top level posts.
     TOP_LEVEL = {QUESTION, FORUM, TOOL, TUTORIAL, NEWS}
+
+    def is_toplevel(self):
+        return self.type in self.TOP_LEVEL
 
     # The type of the post.
     type = IntegerField(choices=POST_TYPES, default=FORUM)
@@ -200,7 +191,7 @@ class Post(Model):
     # This will maintain the ancestor/descendant relationship bewteen posts.
     root = ForeignKey('self', related_name="descendants", null=True, blank=True)
 
-    # This will maintain parent/child replationships between posts.
+    # This will maintain parent/child relationships between posts.
     parent = ForeignKey('self', null=True, blank=True, related_name='children')
 
     # This is the HTML that the user enters.
@@ -209,5 +200,16 @@ class Post(Model):
     # This is the  HTML that gets displayed.
     html = TextField(default='')
 
+    # This is the blurb field.
+    blurb = TextField(default='')
+
     # What site does the post belong to.
     site = ForeignKey(Site, null=True)
+
+    # Notification to users
+    #notify = ManyToManyField(User)
+
+    def save(self, *args, **kwargs):
+        self.html = html.sanitize(self.text)
+        self.blurb = html.strip_tags(self.text)[:200]
+        super(Post, self).save(*args, **kwargs)

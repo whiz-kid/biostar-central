@@ -8,6 +8,7 @@ from biostar4.forum import html, utils
 from django.template.loader import render_to_string
 from biostar4.forum.utils import parse_tags
 
+
 class PagedownWidget(forms.Textarea):
     TEMPLATE = "widgets/pagedown_widget.html"
 
@@ -122,7 +123,7 @@ class UserEditForm(forms.Form):
                               required=False,
                               help_text="Your google scholar id <code>hordfUUAAAAJ</code>")
 
-    website = forms.CharField(label='Website', required=False, initial='',
+    website = forms.URLField(label='Website', required=False, initial='',
                              help_text="The address of your website.")
 
     location = forms.CharField(label='Location', required=False,
@@ -164,6 +165,16 @@ class UserEditForm(forms.Form):
         if text != self.user.email and User.objects(email=text):
             raise ValidationError('The email {} already exists '.format(text))
         return text
+
+    def clean_my_tags(self):
+        text = self.cleaned_data['my_tags']
+        tags = parse_tags(text)
+        return ",".join(tags)
+
+    def clean_watched_tags(self):
+        text = self.cleaned_data['watched_tags']
+        tags = parse_tags(text)
+        return ",".join(tags)
 
     def clean_username(self):
         text = self.cleaned_data['username']
@@ -238,3 +249,7 @@ class TopLevel(forms.Form):
         text = self.cleaned_data['type']
         return int(text)
 
+    def clean_tag_val(self):
+        text = self.cleaned_data['tag_val']
+        tags = parse_tags(text)
+        return ",".join(tags)

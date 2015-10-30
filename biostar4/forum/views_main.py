@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from biostar4.forum import forms, utils
 from biostar4.forum.models import *
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from biostar4.forum.decorators import *
 
 @fill_user
 def home(request, user):
