@@ -10,7 +10,6 @@ def set_username(sender, instance, **kwargs):
     """
     # We need this to avoid race conditions during user signup.
     instance.username = instance.username or utils.get_uuid()
-    print (instance.id, instance.email)
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):

@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from biostar4.forum import forms, auth
 from biostar4.forum.decorators import *
-from forum import search
+from biostar4.forum import search
 
 
 @fill_user
@@ -23,8 +23,10 @@ def search_view(request, user):
 @fill_post
 def post_details(request, user, post):
 
-    answers = Post.objects.filter(parent=post, type=Post.ANSWER).order_by('-vote_count',
-                                                                           'creation_date')
+    answers = Post.objects.filter(parent=post, type=Post.ANSWER).order_by('-vote_count','-creation_date')
+
+    print (answers)
+
     context = dict(
         user=user,
         post=post,

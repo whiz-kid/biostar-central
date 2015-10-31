@@ -9,7 +9,7 @@ def home(request, user):
 
     #posts = Post.objects.filter(ptype__in=Post.TOP_LEVEL).exclude("html").order_by('-lastedit_date')[:100]
 
-    posts = Post.fast.filter()[:100]
+    posts = Post.objects.top_level(user=user)[:10]
 
     context = dict(
         user=user,

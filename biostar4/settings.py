@@ -46,6 +46,13 @@ INSTALLED_APPS = [
     'biostar4.forum.apps.Biostar4',
 ]
 
+# Add the debug toolbar if the environment variable is set.
+if os.getenv("DEBUG_TOOLBAR"):
+    print("*** importing the DEBUG_TOOLBAR")
+    INSTALLED_APPS.append(
+        'debug_toolbar'
+    )
+
 MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -67,7 +74,7 @@ else:
 
 # Search the theme directories first.
 TMPL_DIRS = template_dirs + [
-    abspath(BASE_DIR, "forum", "templates")
+    abspath(BASE_DIR, "www", "themes")
 ]
 
 TEMPLATES = [
@@ -120,7 +127,7 @@ else:
     static_dirs = []
 
 STATICFILES_DIRS = static_dirs + [
-    os.path.join(BASE_DIR, "forum", "static"),
+    os.path.join(BASE_DIR, "biostar4", "forum", "static"),
 ]
 
 CACHES = {

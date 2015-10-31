@@ -1,12 +1,14 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from biostar4.forum.models import *
+from biostar4.forum import utils
 from django.core.management import call_command
 import os, json
 from itertools import islice
 from html2text import html2text
 
 BATCH_SIZE = 25
+
 
 def join(*args):
     return (os.path.join(*args))
@@ -61,7 +63,6 @@ class B2_User():
 
 
 def migrate_posts(users, dest, limit, batch=25):
-
     # Delete all posts from Biostar 4.
     Post.objects.all().delete()
 
@@ -84,6 +85,8 @@ def migrate_posts(users, dest, limit, batch=25):
 
     toc = open(abspath(dest, "posts.txt"))
 
+    print('*** Starting post migration')
+
     def post_gen():
         for path in islice(toc, limit):
             path = path.strip()
@@ -104,12 +107,15 @@ def migrate_posts(users, dest, limit, batch=25):
             lastedit_user = users[lastedit_user_id]
             text = html2text(d['text'])
             p = Post(
+                id=d['id'],
                 title=d['title'],
                 text=text,
                 blurb=text[:200],
                 html=d['html'],
                 tag_val=d['tag_val'],
                 author=author,
+                parent_id=d['parent_id'],
+                root_id=d['root_id'],
                 lastedit_user=lastedit_user,
                 creation_date=d['creation_date'],
                 lastedit_date=d['lastedit_date'],
@@ -127,6 +133,14 @@ def migrate_posts(users, dest, limit, batch=25):
 
     pc = Post.objects.all().count()
     print('*** Migrated {} posts.'.format(pc))
+
+    # Set up all post tags
+    query = Post.objects.filter(type__in=Post.TOP_LEVEL)
+    print('*** Setting up post tags for {} posts.'.format(query.count()))
+    for post in query:
+        tags = utils.parse_tags(post.tag_val)
+        post.tags.add(*tags)
+
 
 def migrate_users(dest, limit, batch=25):
     # Maintains the mapping to userid.
@@ -160,7 +174,7 @@ def migrate_users(dest, limit, batch=25):
             d = json.loads(open(fname).read())
             u = User(
                 id=d['id'],
-                username=str(d['id']),
+                username="user%d" % d['id'],
                 email=d['email'],
                 password=d['password'],
                 date_joined=d['date_joined'],
@@ -185,6 +199,7 @@ def migrate_users(dest, limit, batch=25):
                 name=d['name'],
                 score=d['score'],
                 text=text,
+                html = html.sanitize(text, None),
                 scholar=d['scholar'],
                 twitter=d['twitter'],
                 location=d['location'],

@@ -64,6 +64,7 @@ def migrate_posts(dest, limit):
         toc.write("%s\n" % segname)
 
         data =dict(
+            id=p.id,
             title=p.title,
             text=p.content,
             html=p.html,
@@ -79,6 +80,8 @@ def migrate_posts(dest, limit):
             has_accepted=p.has_accepted,
             type=p.type,
             status=p.status,
+            parent_id=p.parent_id,
+            root_id=p.root_id,
         )
 
         out = json.dumps(data)

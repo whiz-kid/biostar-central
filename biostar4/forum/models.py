@@ -29,7 +29,7 @@ class Profile(Model):
         (MODERATOR, "Moderator"),
         (ADMIN, "Admin"),
     ]
-
+    MODERATOR_ROLES ={MODERATOR, ADMIN}
     USER_ROLES_MAP = dict(USER_ROLES)
 
     # User roles.
@@ -56,6 +56,9 @@ class Profile(Model):
     def is_suspended(self):
         return self.access != self.ACTIVE
 
+    def is_moderator(self):
+        return self.role in self.MODERATOR_ROLES
+
     user = OneToOneField(User)
     name = CharField(max_length=100, default="User")
     score = IntegerField(default=0)
@@ -79,9 +82,18 @@ class Profile(Model):
         super(Profile, self).save(*args, **kwargs)
 
 
-class FastManager(Manager):
-    def get_queryset(self):
-        return super(FastManager, self).get_queryset().filter()
+class PostManager(Manager):
+
+    def top_level(self, user):
+        is_moderator = user.is_authenticated() and user.profile.is_moderator()
+        query = self.filter(type__in=Post.TOP_LEVEL)
+        if is_moderator:
+            query = query.filter(status__in=(Post.PUBLISHED, Post.DELETED, Post.CLOSED))
+        else:
+            query = query.filter(status__in=(Post.PUBLISHED, Post.CLOSED))
+        query = query.select_related("root", "author", "author__profile", "lastedit_user", "lastedit_user__profile").prefetch_related("tags").defer("text", "html")
+        return query
+
 
 
 class Post(Model):
@@ -89,8 +101,7 @@ class Post(Model):
     MAX_CHARS = 15000
 
     # A manager to get a reduced amount of filed on posts.
-    fast = FastManager()
-    objects = Manager()
+    objects = PostManager()
 
     DRAFT, PENDING, PUBLISHED, CLOSED, DELETED = [1, 2, 3, 4, 5]
 
