@@ -17,7 +17,7 @@ Test site (may be on or off): http://test.biostars.org
 
 2. Install the requirements:
 	
-		pip3 install -r requirements.txt
+		pip3 install -r conf/requirements.txt
  	
 3. Run the server
 
@@ -33,7 +33,7 @@ Test site (may be on or off): http://test.biostars.org
 4. Most settings values will pulled from the environment if available.
    For details see:
 
-		more biostar4/settings.py
+		more biostar4/settings/base.py
 
 # Documentation
 

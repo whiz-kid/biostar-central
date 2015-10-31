@@ -9,7 +9,7 @@ def set_username(sender, instance, **kwargs):
     Creates a username for the user.
     """
     # We need this to avoid race conditions during user signup.
-    instance.username = instance.username or utils.get_uuid()
+    instance.username = instance.username or utils.get_uuid()[:30]
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):

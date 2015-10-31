@@ -1,12 +1,13 @@
 """
 """
-import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import os, sys
 
 def abspath(*args):
     return os.path.abspath(os.path.join(*args))
 
+# Directory name of this file.
+__THIS = os.path.dirname(abspath(__file__))
+BASE_DIR = abspath(__THIS, "..", "..")
 
 ADMIN_NAME = "Admin"
 ADMIN_EMAIL = "admin@foo.bar"
@@ -68,19 +69,14 @@ MIDDLEWARE_CLASSES = [
 ROOT_URLCONF = 'biostar4.urls'
 
 if os.getenv("THEME_DIRS"):
-    template_dirs = os.getenv("THEME_DIRS").split()
+    THEME_DIRS = os.getenv("THEME_DIRS").split()
 else:
-    template_dirs = []
-
-# Search the theme directories first.
-TMPL_DIRS = template_dirs + [
-    abspath(BASE_DIR, "www", "themes")
-]
+    THEME_DIRS = []
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': TMPL_DIRS,
+        'DIRS': THEME_DIRS,
         'APP_DIRS': True,
 
         'OPTIONS': {
@@ -99,11 +95,12 @@ WSGI_APPLICATION = 'biostar4.wsgi.application'
 
 TAGGIT_CASE_INSENSITIVE = True
 
-# The database is used only to 'pacify' addons
+# Database settings.
+__NAME = os.path.join(BASE_DIR, 'www', 'db', os.getenv('DATABASE_NAME', 'biostar4.sqlite3'))
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'www', 'db', 'biostar4.sqlite3'),
+        'NAME': __NAME,
     }
 }
 
@@ -149,10 +146,6 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 RECAPTCHA_ENABLED = bool(os.getenv("RECAPTCHA_ENABLED"))
 RECAPTCHA_SITE_KEY = os.getenv("RECAPTCHA_SECRET_KEY", "")
 RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY", "")
-
-# Mongodb settings.
-MONGODB_NAME = os.getenv("MONGODB_NAME", "biostar-test")
-MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017/")
 
 # Email settings
 EMAIL_BACKEND = os.getenv(

@@ -9,7 +9,7 @@ sys.path.append(PARENT_DIR)
 
 if __name__ == "__main__":
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "biostar4.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "biostar4.settings.base")
 
     from django.core.management import execute_from_command_line
 

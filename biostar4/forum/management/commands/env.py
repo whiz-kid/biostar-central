@@ -31,7 +31,7 @@ class Command(BaseCommand):
         print('---------------------')
         print("DJANGO_SETTINGS_MODULE: {}".format(setting_module))
         print("DEBUG: {}".format(settings.DEBUG))
-        print("TEMPLATE_DIRS: {}".format(settings.TMPL_DIRS))
+        print("THEME_DIRS: {}".format(settings.THEME_DIRS))
         print("STATICFILES_DIRS: {}".format(settings.STATICFILES_DIRS))
 
         u_count = User.objects.all().count()

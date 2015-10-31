@@ -7,6 +7,7 @@ from biostar4.forum.models import User, Post, Profile
 from biostar4.forum import html, utils
 from django.template.loader import render_to_string
 from biostar4.forum.utils import parse_tags
+from biostar4.forum.ext.fields import MultiFileField
 
 
 class PagedownWidget(forms.Textarea):
@@ -49,7 +50,6 @@ def unique_email(email):
 def check_email(email):
     if not User.objects.filter(email=email):
         raise ValidationError('The {} email does not exists '.format(email))
-
 
 
 def check_tags(text):
@@ -95,9 +95,6 @@ class LoginForm(forms.Form):
                 raise forms.ValidationError(
                     "Unable to validate this email/password combination"
                 )
-
-
-from biostar4.forum.ext.fields import MultiFileField
 
 
 class UserEditForm(forms.Form):
@@ -146,7 +143,7 @@ class UserEditForm(forms.Form):
                            min_num=0, max_num=3, required=False,
                            max_file_size=1024 * 1024 * Profile.MAX_FILE_SIZE,
                            help_text="Files shown on your profile. You may upload 3 files at a time, {} Mb per file.".format(
-                               Profile.MAX_FILE_NUM, Profile.MAX_FILE_SIZE) )
+                               Profile.MAX_FILE_NUM, Profile.MAX_FILE_SIZE))
 
     remove = forms.MultipleChoiceField(label="Remove uploaded files", required=False,
                                        widget=forms.CheckboxSelectMultiple
@@ -156,12 +153,13 @@ class UserEditForm(forms.Form):
         text = self.cleaned_data['files']
         count = len(self.user.profile.files())
         if text and count > Profile.MAX_FILE_NUM:
-            raise ValidationError('Only {} file uploads are allowed. You have {}'.format(Profile.MAX_FILE_NUM, count))
+            raise ValidationError('Only {} file uploads are allowed. You have {}'.format(
+                Profile.MAX_FILE_NUM, count))
         return text
 
     def clean_email(self):
         text = self.cleaned_data['email']
-        if text != self.user.email and User.objects(email=text):
+        if text != self.user.email and User.objects.filter(email=text):
             raise ValidationError('The email {} already exists '.format(text))
         return text
 
@@ -180,8 +178,18 @@ class UserEditForm(forms.Form):
         text = text.lower()
         text = text.strip(" @")
         text = "".join(text.split())
-        if text != self.user.username and User.objects(username=text):
+
+        # New username must be unique.
+        # There is potential for a race condition here.
+        if text != self.user.username and User.objects.filter(username=text):
             raise ValidationError('The username {} already exists '.format(text))
+
+        # Only auto-generated usernames may look like that.
+        # Otherwise we can't automatically create default username.
+        if text != self.user.username and text.startswith("user"):
+            raise ValidationError(
+                "New usernames may not start with the word 'user'.")
+
         return text
 
     def __init__(self, user, *args, **kwargs):
@@ -194,6 +202,7 @@ class UserEditForm(forms.Form):
             self.fields['remove'].choices = choices
         else:
             del self.fields['remove']
+
 
 class TopLevel(forms.Form):
     POST_TYPES = [
