@@ -1,6 +1,6 @@
 ## Biostar: Software for Building Scientific Communities
 
-[![Build Status][build-image][build-url] 
+[![Build Status][build-image]][build-url] 
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
 
 [build-image]: https://travis-ci.org/ialbert/biostar-central.svg?branch=4.0
