@@ -12,7 +12,7 @@ before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
 
 env:
-  - DJANGO_SETTINGS_MODULE=biostar.settings.travis
+  - DJANGO_SETTINGS_MODULE=biostar4.settings.travis
 
 install:
     - pip install -q -r conf/requirements_travis.txt
