@@ -6,7 +6,14 @@ from django.contrib.sites.models import Site
 from django.utils import timezone
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-import random
+import os, random, logging
+from django.conf import settings
+
+logger = logging.getLogger('biostar')
+
+def abspath(*args):
+    return os.path.abspath(os.path.join(*args))
+
 
 def create_user(email, password):
     user = User(email=email)
@@ -20,47 +27,72 @@ def create_user(email, password):
 def file_path(instance, filename):
     now = timezone.now().strftime('%Y-%m-%d')
     rnd = random.randint(10000, 90000)
-    key = "media/{now}/{rnd}-{filename}".format(now=now, rnd=rnd, filename=filename)
+    key = "{now}/{rnd}-{filename}".format(now=now, rnd=rnd, filename=filename)
     return key
 
 
 class UserUpload(Model):
     "Represents an uploaded file attached to a user"
+    name = CharField(default='File', max_length=250)
     user = ForeignKey(User)
     file = FileField(upload_to=file_path)
 
+    def delete(self, *args, **kwds):
+        super(UserUpload, self).delete(*args, **kwds)
+        try:
+            os.remove(abspath(settings.MEDIA_ROOT, self.file.name))
+        except Exception as exc:
+            logger.error('*** error deleting upload {} exc:{}'.format(self.id, exc))
 
 class Profile(Model):
     # File size in megabytes.
     MAX_FILE_SIZE = 5
-    MAX_FILE_NUM = 10
-    MAX_MESSAGES = 25
 
+    # How many files may be attached per user.
+    MAX_FILE_NUM = 10
+
+    # How many messages to retain per user.
+    MAX_MESSAGES = 50
+
+    # Valid user roles types.
     NEW_USER, TRUSTED_USER, MODERATOR, ADMIN = [1, 2, 3, 4]
 
+    # User roles with readable labels.
     USER_ROLES = [
         (NEW_USER, "New user"),
         (TRUSTED_USER, "Trusted user"),
         (MODERATOR, "Moderator"),
         (ADMIN, "Admin"),
     ]
+
+    # Moderator roles.
     MODERATOR_ROLES ={MODERATOR, ADMIN}
+
+    # User role quick lookup.
     USER_ROLES_MAP = dict(USER_ROLES)
 
-    # User roles.
+    # User roles in the database.
     role = IntegerField(default=NEW_USER, choices=USER_ROLES)
 
     def get_role(self):
         return self.USER_ROLES_MAP.get(self.role, "???")
 
+    def is_moderator(self):
+        return self.role in self.MODERATOR_ROLES
+
+    # User access types.
     ACTIVE, SUSPENDED, BANNED = [100, 200, 300]
 
+    # User access type labels.
     ACCESS_TYPES = [
         (ACTIVE, "Active"),
         (SUSPENDED, "Suspended"),
         (BANNED, "Banned"),
     ]
+
+    # User access type lookup.
     ACCESS_TYPES_MAP = dict(ACCESS_TYPES)
+
     # User login permissions.
     access = IntegerField(default=ACTIVE, choices=ACCESS_TYPES)
 
@@ -71,8 +103,6 @@ class Profile(Model):
     def is_suspended(self):
         return self.access != self.ACTIVE
 
-    def is_moderator(self):
-        return self.role in self.MODERATOR_ROLES
 
     user = OneToOneField(User)
     name = CharField(max_length=100, default="User")
@@ -91,6 +121,9 @@ class Profile(Model):
     html = CharField(max_length=6000, default='')
 
     tags = TaggableManager()
+
+    def files(self):
+        return self.uploads.all()
 
     def save(self, *args, **kwargs):
         self.html = html.sanitize(self.text)
@@ -132,6 +165,17 @@ class PostManager(Manager):
         query = self.defer(query)
         return query
 
+
+class PostUpload(Model):
+    "Represents an uploaded file attached to a post"
+    user = ForeignKey(User)
+    file = FileField(upload_to=file_path)
+
+    def delete(self, *args, **kwds):
+        try:
+            os.remove(abspath(settings.MEDIA_ROOT, self.file.name))
+        except Exception as exc:
+            logger.error('*** error deleting upload {} exc:{}'.format(self.id, exc))
 
 
 class Post(Model):

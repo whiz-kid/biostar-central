@@ -85,15 +85,23 @@ def user_edit(request, user):
             user = forms.update(user, form)
             user.profile = forms.update(profile, form)
 
+            # This way each upload delete method is triggered.
+            remove_list = request.POST.getlist('remove')
+            for upload in UserUpload.objects.filter(pk__in=remove_list):
+                upload.delete()
+
+            # Manage the uploaded files.
             file_list = request.FILES.getlist('files')
             for file in file_list:
-                upload = UserUpload(file=file, user=user)
+                upload = UserUpload(file=file, user=user, name=file.name[-100:])
                 upload.save()
                 profile.uploads.add(upload)
 
+            # Save user and profile.
             user.save()
             profile.save()
 
+            # Redirect to profile.
             return redirect("user_profile", uid=user.id)
 
     else:

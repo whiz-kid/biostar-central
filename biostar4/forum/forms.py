@@ -51,6 +51,7 @@ def check_email(email):
         raise ValidationError('The {} email does not exists '.format(email))
 
 
+
 def check_tags(text):
     tags = parse_tags(text)
     bigs = [tag for tag in tags if len(tag) > 10]
@@ -139,18 +140,24 @@ class UserEditForm(forms.Form):
     text = forms.CharField(label="About me",
                            widget=PagedownWidget(),
                            required=False,
-                           max_length=3000,
-                           help_text="Introduce yourself to others (markdown ok)")
+                           max_length=3000)
 
     files = MultiFileField(label="Attach files",
                            min_num=0, max_num=3, required=False,
                            max_file_size=1024 * 1024 * Profile.MAX_FILE_SIZE,
-                           help_text="These files will be shown on your profile. Max size: {} Mb".format(
-                               Profile.MAX_FILE_SIZE), )
+                           help_text="Files shown on your profile. You may upload 3 files at a time, {} Mb per file.".format(
+                               Profile.MAX_FILE_NUM, Profile.MAX_FILE_SIZE) )
 
     remove = forms.MultipleChoiceField(label="Remove uploaded files", required=False,
                                        widget=forms.CheckboxSelectMultiple
                                        )
+
+    def clean_files(self):
+        text = self.cleaned_data['files']
+        count = len(self.user.profile.files())
+        if text and count > Profile.MAX_FILE_NUM:
+            raise ValidationError('Only {} file uploads are allowed. You have {}'.format(Profile.MAX_FILE_NUM, count))
+        return text
 
     def clean_email(self):
         text = self.cleaned_data['email']
@@ -182,10 +189,11 @@ class UserEditForm(forms.Form):
         super(UserEditForm, self).__init__(*args, **kwargs)
         self.user = user
         # Populate the file remove fields.
-        choices = [(up.id, str(up.file)) for up in user.profile.uploads.all()]
-        self.fields['remove'].choices = choices
-
-
+        choices = [(up.id, str(up.name)) for up in user.profile.files()]
+        if choices:
+            self.fields['remove'].choices = choices
+        else:
+            del self.fields['remove']
 
 class TopLevel(forms.Form):
     POST_TYPES = [

@@ -5,84 +5,90 @@
 {% block title %}Me{% endblock %}
 
 {% block body %}
-{% with profile=target.profile %}
-    <div class="uk-grid top">
+    {% with profile=target.profile %}
+        <div class="uk-grid top">
 
 
-        <div class="uk-width-1-1 uk-width-medium-1-4">
-            <img class="uk-border-circle uk-align-center"
-                 src="{% gravatar user=target size=150 %}"
-                 alt="">
+            <div class="uk-width-1-1 uk-width-medium-1-4">
+                <img class="uk-border-circle uk-align-center"
+                     src="{% gravatar user=target size=150 %}"
+                     alt="">
+            </div>
+
+            <div class="uk-width-1-1 uk-width-medium-3-4 uk-overflow-container">
+
+                <div>{{ profile.get_role }}: {{ profile.name }} </div>
+
+                <div>Status: {{ profile.get_access }} &bull; Email
+
+                    {% if user == target %}
+                        ({{ target.email }})
+                    {% else %}
+                        ({{ target.email|hide_email }})
+                    {% endif %}
+                </div>
+                <div class="uk-texts-muted">
+
+                    <div>
+                        Score: {{ profile.score }} &bull;
+                        Posts: {{ profile.post_num }}
+                    </div>
+
+                    <div>
+
+                        Username: <b>@{{ target.username }}</b>
+
+                        {% if profile.scholar %}
+                            &bull;
+                            <a href="http://scholar.google.com/citations?user={{ profile.scholar }}">
+                                <i class="uk-icon-book"></i> Google Scholar</a>
+                        {% endif %}
+
+                        {% if profile.twitter %}
+                            &bull; Twitter:
+                            <a href="http://twitter.com/{{ profile.twitter }}">
+                                <i class="uk-icon-twitter"></i>{{ profile.twitter }}</a>
+                        {% endif %}
+
+                    </div>
+
+                    <div>
+                        Location: {{ profile.location }}
+                    </div>
+
+                    <div>
+                        Last visited: {{ target.last_login|timesince }} ago
+                    </div>
+
+                    <div>
+                        Date joined: {{ target.date_joined|timesince }} ago
+                    </div>
+
+                    <div>
+                        Web: <a href="{{ profile.website }}" rel="nofollow">
+                        {{ profile.website|truncatechars:100 }}</a>
+                    </div>
+                    <hr>
+                    <div>
+                        {{ profile.html|safe }}
+                    </div>
+                    {% if profile.files %}
+                        <div>
+                            <hr>
+                            Uploaded files:
+                            <ul>
+                                {% for upload in profile.files %}
+                                    <li>
+                                        <a href="/media/{{ upload.file }}">{{ upload.name }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
-        <div class="uk-width-1-1 uk-width-medium-3-4 uk-overflow-container">
-
-            <div>{{ profile.get_role }}: {{ profile.name }} </div>
-
-            <div>Status: {{ profile.get_access }} &bull; Email
-
-                {% if user == target %}
-                    ({{ target.email }})
-                {% else %}
-                    ({{ target.email|hide_email }})
-                {% endif %}
-            </div>
-            <div class="uk-texts-muted">
-
-                <div>
-                    Score: {{ profile.score }} &bull;
-                    Posts: {{ profile.post_num }}
-                </div>
-
-                <div>
-
-                    Username: <b>@{{ target.username }}</b>
-
-                    {% if profile.scholar %}
-                        &bull;
-                        <a href="http://scholar.google.com/citations?user={{ profile.scholar }}">
-                            <i class="uk-icon-book"></i> Google Scholar</a>
-                    {% endif %}
-
-                    {% if profile.twitter %}
-                        &bull; Twitter:
-                        <a href="http://twitter.com/{{ profile.twitter }}">
-                            <i class="uk-icon-twitter"></i>{{ profile.twitter }}</a>
-                    {% endif %}
-
-                </div>
-
-                <div>
-                    Location: {{ profile.location }}
-                </div>
-
-                <div>
-                    Last visited: {{ target.last_login|timesince }} ago
-                </div>
-
-                <div>
-                    Date joined: {{ target.date_joined|timesince }} ago
-                </div>
-
-                <div>
-                    Web: <a href="{{ profile.website }}" rel="nofollow">
-                    {{ profile.website|truncatechars:100 }}</a>
-                </div>
-                <hr>
-                <div>
-                    {{ profile.html|safe }}
-                </div>
-                <div>
-                    <ul>
-                        {% for upload in profile.uploads.all %}
-                            <li><a href="/media/{{ upload.file }}">{{ upload.file }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-{%  endwith %}
+    {% endwith %}
 
 {% endblock %}
