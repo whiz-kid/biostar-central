@@ -1,6 +1,10 @@
 ## Biostar: Software for Building Scientific Communities
 
-![Build Status](https://travis-ci.org/ialbert/biostar-central.svg?branch=4.0)
+[![Build Status][build-image][build-url] 
+[![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
+
+[build-image]: https://travis-ci.org/ialbert/biostar-central.svg?branch=4.0
+[build-url]: https://travis-ci.org/ialbert/biostar-central/builds
 
 Branch 4.0 rewrite. Under heavy development. See:
 https://github.com/ialbert/biostar-central/issues/291
