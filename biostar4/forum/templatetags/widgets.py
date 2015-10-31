@@ -129,4 +129,4 @@ def time_ago(date):
     else:
         diff = delta.days / 365.0
         unit = '%0.1f years' % diff
-    return "%s" % unit
+    return "%s ago" % unit

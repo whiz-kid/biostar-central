@@ -21,7 +21,7 @@ Test site (may be on or off): http://test.biostars.org
 
 2. Install the requirements:
 	
-		pip3 install -r conf/requirements.txt
+        pip3 install -r conf/requirements.txt
  	
 3. Run the server
 
@@ -39,6 +39,6 @@ Test site (may be on or off): http://test.biostars.org
 
 		more biostar4/settings/base.py
 
-# Documentation
+## Documentation
 
 * [Migrating from Biostar 2](docs/migration.md)
