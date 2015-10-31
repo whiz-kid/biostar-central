@@ -1,6 +1,6 @@
-# Biostar 4
-
 ## Biostar: Software for Building Scientific Communities
+
+![Build Status](https://travis-ci.org/ialbert/biostar-central.svg?branch=4.0)
 
 Branch 4.0 rewrite. Under heavy development. See:
 https://github.com/ialbert/biostar-central/issues/291
