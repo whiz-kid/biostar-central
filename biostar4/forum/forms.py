@@ -64,14 +64,6 @@ def check_tags(text):
         raise ValidationError('These tags are too long: {} '.format(",".join(bigs)))
 
 
-def user_file_check(upload):
-    if upload and upload.size > (Profile.MAX_FILE_SIZE * 1024 * 1024):
-        this_size = upload.size / 1024 / 1024
-        raise forms.ValidationError(
-            'File size of {:.0f} MB is larger than maximum allowed {:d} MB ' \
-                .format(this_size, Profile.MAX_FILE_SIZE))
-
-
 class SignupForm(forms.Form):
     email = forms.CharField(label='Email', min_length=5, max_length=100,
                             validators=[unique_email])
@@ -102,6 +94,9 @@ class LoginForm(forms.Form):
                 raise forms.ValidationError(
                     "Unable to validate this email/password combination"
                 )
+
+
+from biostar4.forum.ext.fields import MultiFileField
 
 
 class UserEditForm(forms.Form):
@@ -141,24 +136,21 @@ class UserEditForm(forms.Form):
                                    required=False,
                                    help_text="Posts matching these tags will  generate notifications (regex ok).")
 
-    upload = forms.FileField(label="Attach new file", required=False,
-                             validators=[user_file_check],
-                             help_text="This file will be shown on your profile. Max size: {} Mb".format(
-                                 Profile.MAX_FILE_SIZE),
-                             )
-
-    files = forms.CharField(label="Previously attached files",
-                            widget=forms.Textarea(
-                                attrs={'rows': '3', 'class': 'uk-width-1-1'}),
-                            help_text="Removing a name deletes the file. Max number of files: {}".format(
-                                Profile.MAX_FILE_SIZE),
-                            required=False)
-
     text = forms.CharField(label="About me",
                            widget=PagedownWidget(),
                            required=False,
                            max_length=3000,
                            help_text="Introduce yourself to others (markdown ok)")
+
+    files = MultiFileField(label="Attach files",
+                           min_num=0, max_num=3, required=False,
+                           max_file_size=1024 * 1024 * Profile.MAX_FILE_SIZE,
+                           help_text="These files will be shown on your profile. Max size: {} Mb".format(
+                               Profile.MAX_FILE_SIZE), )
+
+    remove = forms.MultipleChoiceField(label="Remove uploaded files", required=False,
+                                       widget=forms.CheckboxSelectMultiple
+                                       )
 
     def clean_email(self):
         text = self.cleaned_data['email']
@@ -187,8 +179,13 @@ class UserEditForm(forms.Form):
 
     def __init__(self, user, *args, **kwargs):
         # Need to access user during field validation.
-        self.user = user
         super(UserEditForm, self).__init__(*args, **kwargs)
+        self.user = user
+        # Populate the file remove fields.
+        choices = [(up.id, str(up.file)) for up in user.profile.uploads.all()]
+        self.fields['remove'].choices = choices
+
+
 
 class TopLevel(forms.Form):
     POST_TYPES = [
@@ -217,8 +214,8 @@ class TopLevel(forms.Form):
                            help_text="Post tags, for example: rna-seq Separate multiple tags with commas")
 
     type = forms.ChoiceField(label="Post type", choices=POST_TYPES,
-                              initial=Post.PUBLISHED, help_text="Select a post type.",
-                              )
+                             initial=Post.PUBLISHED, help_text="Select a post type.",
+                             )
 
     status = forms.ChoiceField(choices=POST_STATUS, initial=Post.PUBLISHED,
                                help_text="Select a post status. Only published posts will be shown to others",

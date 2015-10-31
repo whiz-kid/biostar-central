@@ -7,6 +7,7 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import authenticate, login, logout
 from biostar4.forum.decorators import *
 
+
 @login_required
 @fill_user
 def me(request, user):
@@ -16,7 +17,7 @@ def me(request, user):
 @login_required
 @fill_user
 def my_site(request, user):
-    #posts = Post.objects.filter(ptype__in=Post.TOP_LEVEL, author=user).exclude("html").order_by('lastedit_date')[:100]
+    # posts = Post.objects.filter(ptype__in=Post.TOP_LEVEL, author=user).exclude("html").order_by('lastedit_date')[:100]
     posts = []
     context = dict(
         user=user,
@@ -41,7 +42,7 @@ def user_profile(request, user, uid):
 
 @fill_user
 def user_list(request, user):
-    #users = User.objects.all()[:100].defer("profile__text", "profile__html", "profile__files").order_by('-last_login')
+    # users = User.objects.all()[:100].defer("profile__text", "profile__html", "profile__files").order_by('-last_login')
     users = User.objects.all()[:100].select_related("profile")
     context = dict(
         user=user,
@@ -73,48 +74,29 @@ def votes(request, user):
 @login_required
 @fill_user
 def user_edit(request, user):
+    profile = user.profile
+
     if request.method == 'POST':
-        fs = FileSystemStorage()
+
         form = forms.UserEditForm(user, request.POST, request.FILES)
 
-        # Save uploaded file.
-        stream = request.FILES.get('upload')
-
-        # Raise errors if user has too many files or the file is too large.
-        if stream:
-            if len(user.files) > User.MAX_FILE_NUM:
-                form.add_error(None, "Uploading too many files.  Max number is %s" % User.MAX_FILE_NUM)
-
-
         if form.is_valid():
-            # This will be used to remove files if needed.
-            old_files = list(user.profile.files)
-
             # Update the user attributes from the form.
             user = forms.update(user, form)
-            user.profile = forms.update(user.profile, form)
+            user.profile = forms.update(profile, form)
 
-            # Delete files that the user removed
-            for path in old_files:
-                path = path.strip()
-                if path not in user.profile.files:
-                    fs.delete(path)
-
-            # Handle the uploaded files.
-            if stream:
-                name = stream.name
-                now = datetime.now().strftime('%Y-%m-%d')
-                rnd = random.randint(10000, 90000)
-                key = "upload/{now}/{rnd}-{name}".format(now=now, rnd=rnd, name=name)
-                fs.save(key, stream)
-                user.files.append(key)
+            file_list = request.FILES.getlist('files')
+            for file in file_list:
+                upload = UserUpload(file=file, user=user)
+                upload.save()
+                profile.uploads.add(upload)
 
             user.save()
-            user.profile.save()
+            profile.save()
+
             return redirect("user_profile", uid=user.id)
 
     else:
-        profile = user.profile
         initial = dict(
             name=profile.name,
             email=user.email,
@@ -126,7 +108,6 @@ def user_edit(request, user):
             website=profile.website,
             my_tags=','.join(profile.my_tags),
             watched_tags=','.join(profile.watched_tags),
-            files=" \n".join(profile.files)
         )
         form = forms.UserEditForm(user, initial=initial)
 
@@ -158,7 +139,6 @@ def reset(request):
 
 @fill_user
 def user_logout(request, user):
-
     if request.method == 'POST':
         form = forms.LogoutForm(request.POST)
         if form.is_valid():
@@ -175,7 +155,6 @@ def user_logout(request, user):
 
 
 def user_login(request):
-
     if request.method == 'POST':
         form = forms.LoginForm(request.POST)
 
@@ -184,7 +163,7 @@ def user_login(request):
             form.add_error(None, message)
 
         if form.is_valid():
-            email =  form.cleaned_data['email']
+            email = form.cleaned_data['email']
             password = form.cleaned_data['password']
 
             user = User.objects.filter(email=email).first()
@@ -218,7 +197,6 @@ def user_login(request):
 
 
 def signup(request):
-
     # User.objects.all().delete()
 
     if request.method == 'POST':

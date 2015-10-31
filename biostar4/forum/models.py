@@ -4,7 +4,9 @@ from django.contrib.auth.models import User
 from taggit.managers import TaggableManager
 from django.contrib.sites.models import Site
 from django.utils import timezone
-
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+import random
 
 def create_user(email, password):
     user = User(email=email)
@@ -13,6 +15,19 @@ def create_user(email, password):
     # Need to refetch the user because signals may altered the profile.
     user = User.objects.get(pk=user.pk)
     return user
+
+
+def file_path(instance, filename):
+    now = timezone.now().strftime('%Y-%m-%d')
+    rnd = random.randint(10000, 90000)
+    key = "media/{now}/{rnd}-{filename}".format(now=now, rnd=rnd, filename=filename)
+    return key
+
+
+class UserUpload(Model):
+    "Represents an uploaded file attached to a user"
+    user = ForeignKey(User)
+    file = FileField(upload_to=file_path)
 
 
 class Profile(Model):
@@ -71,7 +86,7 @@ class Profile(Model):
     website = CharField(max_length=250, default='')
     my_tags = CharField(max_length=500, default='')
     watched_tags = CharField(max_length=500, default='')
-    files = CharField(max_length=1000, default='')
+    uploads = ManyToManyField(UserUpload)
     text = CharField(max_length=3000, default='')
     html = CharField(max_length=6000, default='')
 
@@ -84,14 +99,37 @@ class Profile(Model):
 
 class PostManager(Manager):
 
+    def build(self, query):
+        "Adds related and prefetch elements to the query."
+        return query.select_related("root", "author", "author__profile", "lastedit_user",
+                                    "lastedit_user__profile").prefetch_related("tags")
+
+    def defer(self, query):
+        "Content that does not need to be present in post lists."
+        return query.defer("text", "html")
+
+    def my_posts(self, user):
+        "Selects posts by a user"
+        query = self.filter(author=user)
+        query = self.build(query)
+        query = self.defer(query)
+        return query
+
     def top_level(self, user):
+        "Selects the toplevel posts for listing"
         is_moderator = user.is_authenticated() and user.profile.is_moderator()
         query = self.filter(type__in=Post.TOP_LEVEL)
+
         if is_moderator:
-            query = query.filter(status__in=(Post.PUBLISHED, Post.DELETED, Post.CLOSED))
+            # Moderators see all posts.
+            status = (Post.PUBLISHED, Post.DELETED, Post.CLOSED)
         else:
-            query = query.filter(status__in=(Post.PUBLISHED, Post.CLOSED))
-        query = query.select_related("root", "author", "author__profile", "lastedit_user", "lastedit_user__profile").prefetch_related("tags").defer("text", "html")
+            # Regular users see published and closed posts.
+            status = (Post.PUBLISHED, Post.CLOSED)
+
+        query = query.filter(status__in=status)
+        query = self.build(query)
+        query = self.defer(query)
         return query
 
 

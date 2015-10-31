@@ -74,8 +74,8 @@
                 </div>
                 <div>
                     <ul>
-                        {% for file in profile.files %}
-                            <li><a href="/media/{{ file }}">{{ file }}</a></li>
+                        {% for upload in profile.uploads.all %}
+                            <li><a href="/media/{{ upload.file }}">{{ upload.file }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
