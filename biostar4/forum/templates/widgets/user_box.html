@@ -2,21 +2,21 @@
 
 <div class="uk-overflow-container uk-text-center">
     <a href="{% url "user_profile" uid=target.id %}">
-        <img class="uk-border-circle" src="{% gravatar user=target size=size %}" alt="">
-
+        <img class="uk-border-circle" src="{% gravatar user=target size=size %}" alt=""></a>
         <div class="uk-text-center">
-            {{ target.profile.name }}
+            @{{ target.username }}
+        </div>
+        <div class="uk-text-center">
+            <a href="{% url "user_profile" uid=target.id %}">{{ target.profile.name }}</a>
         </div>
     </a>
 
-    <div class="uk-text-center">
-        @{{ target.username }}
-    </div>
-</div>
 
-<div class="uk-text-muted uk-text-center">
-    {{ target.profile.location }}
 </div>
 <div class="uk-text-muted uk-text-center">
     {{ date|time_ago }} ago
 </div>
+<div class="uk-text-muted uk-text-center">
+    {{ target.profile.location|truncatechars:20 }}
+</div>
+

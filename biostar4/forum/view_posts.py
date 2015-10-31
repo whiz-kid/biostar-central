@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
-from biostar4.forum import forms, auth, utils
-from biostar4.forum.models import User, Profile, Post
+from django.shortcuts import render
+
+from biostar4.forum import forms, auth
 from biostar4.forum.decorators import *
-from biostar4.run import search
+from forum import search
 
 
 @fill_user

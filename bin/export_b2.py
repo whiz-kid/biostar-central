@@ -1,12 +1,9 @@
 """
-Exports biostar2 into JSON files.
-
+Exports biostar2 as flat files.
 Must be run within a biostar2 instance.
-
-Must be compatible with django 1.6.
 """
 import sys, os, json
-import click
+import argparse
 
 from django.conf import settings
 
@@ -29,29 +26,29 @@ def get_path(dest, date, oid):
     fname = join(dest, segname)
     return fname, segname
 
-@click.command()
-@click.option('--dest',  default=False,
-              help='Destination directory.')
-@click.option('--limit', type=int, default=200, help='Limit to these many users/posts.')
-def main(dest, limit=200):
+def main():
 
-    if limit == 0:
-        limit = None
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--limit", type=int, default=100,
+                        help="limit export to these many entries")
+
+    parser.add_argument("--dir", type=str,
+                        help="destination directory")
+
+    args = parser.parse_args()
 
     user_count = User.objects.all().count()
     post_count = Post.objects.all().count()
-    print("Database contains {:d} users and {:d} posts.".format(user_count, post_count))
+    print("*** Database contains {:d} users and {:d} posts.".format(user_count, post_count))
 
-    if dest:
-        dest = abspath(dest)
+    if args.dir:
+        limit = args.limit
+        dest = abspath(args.dir)
         if not os.path.isdir(dest):
             os.mkdir(dest)
-        print('Migrating the data into {}, limit={}.'.format(dest, limit))
+        print('*** Migrating the data into {}, limit={}.'.format(dest, limit))
         migrate_users(dest=dest, limit=limit)
         migrate_posts(dest=dest, limit=limit)
-
-
-
 
 def migrate_posts(dest, limit):
     posts = Post.objects.all().order_by('id')[:limit]
@@ -70,7 +67,7 @@ def migrate_posts(dest, limit):
             title=p.title,
             text=p.content,
             html=p.html,
-            tags=p.tag_val,
+            tag_val=p.tag_val,
             author_id=p.author.id,
             lastedit_user_id=p.lastedit_user_id,
             creation_date=p.creation_date.isoformat(),
@@ -91,7 +88,7 @@ def migrate_posts(dest, limit):
 
         pc += 1
 
-    print('Migrated %s posts.' % pc)
+    print('*** Migrated %s posts.' % pc)
 
 
 
@@ -132,9 +129,7 @@ def migrate_users(dest, limit):
         fp.close()
         uc += 1
 
-    print("Migrated %s users." % uc)
-
-
+    print("*** Migrated %s users." % uc)
 
 if __name__ == '__main__':
     main()

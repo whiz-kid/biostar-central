@@ -1,5 +1,4 @@
 import sys, os, warnings
-import click
 from django.conf import settings
 
 from whoosh import searching
@@ -10,7 +9,7 @@ from whoosh.qparser import QueryParser
 
 SCHEMA = Schema(title=TEXT(stored=True), pid=ID(stored=True), content=TEXT(stored=True))
 
-__PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+__PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../', '..'))
 
 sys.path.append(os.getcwd())
 sys.path.append(__PATH)
@@ -40,12 +39,6 @@ def do_search(query, idx=None):
 
     return result, items
 
-@click.command()
-@click.option('--similar', type=str, default=False,
-              help='Similar to document id' )
-@click.option('--query', type=str, default=False,
-              help='Queries the database')
-@click.option('--rebuild', is_flag=True, default=False, help='Rebuilds the search database')
 def main(query, rebuild, similar):
 
     import django

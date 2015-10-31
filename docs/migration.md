@@ -2,6 +2,8 @@
 
 There is a migration script in the Biostar 4 source directory
 that will migrate all data across the software versions. 
+The data are migrated into text files and loaded up 
+in the other system.
 
 The paths to directory names
 will need to be changed to match your installation.
@@ -21,37 +23,33 @@ versions as `python2`, `pip2` and `python3` and `pip3`.
 		cd ~/app/biostar2-central
 		
 		# Set up the migration specific dependencies.
-		pip2 install click markdown2 mongoengine  html2text
+		pip2 install markdown2 html2text
 		
 		# Load the environment.
 		source conf/defaults.env 
 		
 		# Print the current environment.
 		./biostar.sh env
-	
-2. Add `mongodb` specific settings to the biostar 2 settings file.
-
-		SETTINGS=~/app/biostar2-central/biostar/settings/base.py
-		echo 'MONGODB_NAME = os.getenv("MONGODB_NAME", "test")' >> $SETTINGS
-		echo 'MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017/test")' >> $SETTINGS
 		
-3. Add both the biostar 2 and biostar 4 source directories to the python import path:
-
-		export PYTHONPATH=~/app/biostar2-central:~/app/biostar4-central/
+		# Add the biostar 2 source directory to the python path
+		export PYTHONPATH=.:$PYTHONPATH
 		
-4. Run the migrate script from the biostar 2 source directory:
+2. Export the data into flat files:
 
-		# Change to the biostar 2 repository
-		cd ~/app/biostar2-central
+		# Run the migrate script in the biostar 2 source directory:
 		
-		# Run the migration script from the biostar 4 directory.
 		# It will show the settings will be used for migrating the data.
-		python2 ~/app/biostar4-central/biostar4/run/migrate.py 
+		python2 ~/app/biostar4-central/bin/export_b2.py
 		
-		# See help for migration parameters:
-		python2 ~/app/biostar4-central/biostar4/run/migrate.py --help
+		# Export the data into files.
+		mkdir ~/tmp/data
+		python2 ~/app/biostar4-central/bin/export_b2.py --dest ~/tmp/data
 		
+2. Import the data from the flatfiles
+
+		cd ~/app/biostar4-central
+
 		# Perform the migration.
-		python2 ~/app/biostar4-central/biostar4/run/migrate.py --drop --migrate
+		python3 -m biostar4.manage import_biostar2 
 
 
