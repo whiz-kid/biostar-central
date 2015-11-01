@@ -19,15 +19,6 @@ class PagedownWidget(forms.Textarea):
         return render_to_string(self.TEMPLATE, params)
 
 
-def update(obj, form):
-    "Sets object attributes from form fields"
-    if form.is_valid():
-        for name, value in form.cleaned_data.items():
-            if hasattr(obj, name):
-                setattr(obj, name, value)
-    return obj
-
-
 def get_captcha_field():
     if settings.RECAPTCHA_ENABLED:
         return captcha.html_field(settings.RECAPTCHA_SITE_KEY)
@@ -139,23 +130,23 @@ class UserEditForm(forms.Form):
                            required=False,
                            max_length=3000)
 
-    files = MultiFileField(label="Attach files",
-                           min_num=0, max_num=3, required=False,
+    uploads = MultiFileField(label="Attach files",
+                           min_num=0, max_num=Profile.MAX_FILE_NUM, required=False,
                            max_file_size=1024 * 1024 * Profile.MAX_FILE_SIZE,
-                           help_text="Files shown on your profile. You may upload 3 files at a time, {} Mb per file.".format(
+                           help_text="Files shown on your profile. You may upload {} files, {} Mb per file.".format(
                                Profile.MAX_FILE_NUM, Profile.MAX_FILE_SIZE))
 
-    remove = forms.MultipleChoiceField(label="Remove uploaded files", required=False,
+    remove_ids = forms.MultipleChoiceField(label="Remove uploaded files", required=False,
                                        widget=forms.CheckboxSelectMultiple
                                        )
 
-    def clean_files(self):
-        text = self.cleaned_data['files']
-        count = len(self.user.profile.files())
-        if text and count > Profile.MAX_FILE_NUM:
-            raise ValidationError('Only {} file uploads are allowed. You have {}'.format(
+    def clean_uploads(self):
+        files = self.cleaned_data['uploads']
+        count = len(self.user.profile.files.all()) + len(files)
+        if count > Profile.MAX_FILE_NUM:
+            raise ValidationError('Only {} file uploads are allowed per user. You have {}'.format(
                 Profile.MAX_FILE_NUM, count))
-        return text
+        return files
 
     def clean_email(self):
         text = self.cleaned_data['email']
@@ -197,11 +188,11 @@ class UserEditForm(forms.Form):
         super(UserEditForm, self).__init__(*args, **kwargs)
         self.user = user
         # Populate the file remove fields.
-        choices = [(up.id, str(up.name)) for up in user.profile.files()]
+        choices = [(up.id, str(up.name)) for up in user.profile.files.all()]
         if choices:
-            self.fields['remove'].choices = choices
+            self.fields['remove_ids'].choices = choices
         else:
-            del self.fields['remove']
+            del self.fields['remove_ids']
 
 
 class TopLevel(forms.Form):
@@ -243,13 +234,13 @@ class TopLevel(forms.Form):
     status = forms.ChoiceField( label = "State",
                         choices=POST_STATUS, initial=Post.PUBLISHED)
 
-    files = MultiFileField(label="Attach files",
-                           min_num=0, max_num=4, required=False,
+    uploads = MultiFileField(label="Attach files",
+                           min_num=0, max_num=Post.MAX_FILE_NUM, required=False,
                            max_file_size=1024 * 1024 * Post.MAX_FILE_SIZE,
                            help_text="Files attached to the post. You may attach {} files, {} Mb per file.".format(
                                Post.MAX_FILE_NUM, Post.MAX_FILE_SIZE))
 
-    remove = forms.MultipleChoiceField(label="Remove uploaded files", required=False,
+    remove_ids = forms.MultipleChoiceField(label="Remove uploaded files", required=False,
                                        widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, user, post, *args, **kwargs):
@@ -265,18 +256,18 @@ class TopLevel(forms.Form):
             choices = []
 
         if choices:
-            self.fields['remove'].choices = choices
+            self.fields['remove_ids'].choices = choices
         else:
-            del self.fields['remove']
+            del self.fields['remove_ids']
 
     def clean_uploads(self):
-        text = self.cleaned_data['uploads']
+        files = self.cleaned_data['uploads']
         if self.post:
-            count = len(self.post.files())
-            if text and count > Post.MAX_FILE_NUM:
-                raise ValidationError('Only {} file uploads are allowed. You have {}'.format(
+            count = len(self.post.files.all()) + len(files)
+            if count > Post.MAX_FILE_NUM:
+                raise ValidationError('Only {} file uploads are allowed per post. You have {}'.format(
                     Post.MAX_FILE_NUM, count))
-        return text
+        return files
 
     def clean_status(self):
         text = self.cleaned_data['status']

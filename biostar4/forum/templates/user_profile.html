@@ -72,12 +72,12 @@
                     <div>
                         {{ profile.html|safe }}
                     </div>
-                    {% if profile.files %}
+                    {% if profile.files.all %}
                         <div>
                             <hr>
                             Uploaded files:
                             <ul>
-                                {% for upload in profile.files %}
+                                {% for upload in profile.files.all %}
                                     <li>
                                         <a href="/media/{{ upload.file }}">{{ upload.name }}</a>
                                     </li>

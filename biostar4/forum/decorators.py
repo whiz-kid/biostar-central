@@ -16,7 +16,6 @@ def fill_user(f):
 
     return decorated_function
 
-
 def fill_post(f):
     "Fills the post based on an post id"
 

@@ -91,7 +91,7 @@ class Profile(Model):
     MAX_FILE_SIZE = 5
 
     # How many files may be attached per user.
-    MAX_FILE_NUM = 10
+    MAX_FILE_NUM = 5
 
     # Valid user roles types.
     NEW_USER, TRUSTED_USER, MODERATOR, ADMIN = [1, 2, 3, 4]
@@ -154,7 +154,7 @@ class Profile(Model):
     website = CharField(max_length=250, default='')
     my_tags = CharField(max_length=500, default='')
     watched_tags = CharField(max_length=500, default='')
-    uploads = ManyToManyField(UserUpload)
+    files = ManyToManyField(UserUpload)
     text = CharField(max_length=3000, default='')
     html = CharField(max_length=6000, default='')
 
@@ -162,9 +162,6 @@ class Profile(Model):
 
     # Messages for the user.
     messages = ManyToManyField(Message)
-
-    def files(self):
-        return self.uploads.all()
 
     def save(self, *args, **kwargs):
         self.html = html.sanitize(self.text)

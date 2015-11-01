@@ -1,7 +1,7 @@
 import random
 from datetime import datetime
 from django.shortcuts import render, redirect
-from biostar4.forum import forms, utils
+from biostar4.forum import forms, utils, auth
 from biostar4.forum.models import *
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import authenticate, login, logout
@@ -75,6 +75,10 @@ def votes(request, user):
     )
     return render(request, "user_votes.html", context=context)
 
+@login_required
+@fill_user
+def user_edit_me(request, user):
+    return redirect("user_edit", uid=user.id)
 
 @login_required
 @fill_user
@@ -103,24 +107,16 @@ def user_edit(request, user):
 
         if form.is_valid():
             # Update the user attributes from the form.
-            user = forms.update(user, form)
-            user.profile = forms.update(profile, form)
+            auth.edit_user(user, form.cleaned_data)
 
-            # This way the delete methods on uploads are triggered.
-            remove_list = request.POST.getlist('remove')
-            for upload in UserUpload.objects.filter(user=user, pk__in=remove_list):
-                upload.delete()
+            # Manage uploaded files.
+            remove_ids = request.POST.getlist('remove_ids')
+            files = request.FILES.getlist('uploads')
+            auth.manage_user_files(user=user, files=files, remove_ids=remove_ids)
 
-            # Manage the uploaded files.
-            file_list = request.FILES.getlist('files')
-            for file in file_list:
-                upload = UserUpload(file=file, user=user, name=file.name[-100:])
-                upload.save()
-                profile.uploads.add(upload)
-
-            # Save user and profile.
+            # State is saved only here
             user.save()
-            profile.save()
+            user.profile.save()
 
             # Redirect to profile.
             return redirect("user_profile", uid=user.id)

@@ -50,13 +50,10 @@ def post_new(request, user):
         if form.is_valid():
             post = auth.edit_toplevel_post(user=user, post=None, data=form.cleaned_data)
 
-            print(post)
-
-            # Manage the uploaded files.
-            file_list = request.FILES.getlist('files')
-            for file in file_list:
-                upload = PostUpload.objects.create(file=file, post=post, user=user, name=file.name)
-                post.files.add(upload)
+            # Manage uploaded files.
+            remove_ids = request.POST.getlist('remove_ids')
+            files = request.FILES.getlist('uploads')
+            auth.manage_post_files(user=user, post=post, files=files, remove_ids=remove_ids)
 
             return redirect("post_details", pid=post.id)
 
@@ -89,16 +86,10 @@ def post_edit(request, user, post):
             # Update the post data.
             post = auth.edit_toplevel_post(user=user, post=post, data=form.cleaned_data)
 
-            # This way the delete methods on uploads are triggered.
-            remove_list = request.POST.getlist('remove')
-            for upload in PostUpload.objects.filter(post=post, pk__in=remove_list):
-                upload.delete()
-
-            # Manage the uploaded files.
-            file_list = request.FILES.getlist('files')
-            for file in file_list:
-                upload = PostUpload(file=file, user=user, name=file.name[-100:])
-                post.uploads.add(upload)
+            # Manage uploaded files.
+            remove_ids = request.POST.getlist('remove_ids')
+            files = request.FILES.getlist('uploads')
+            auth.manage_post_files(user=user, post=post, files=files, remove_ids=remove_ids)
 
             return redirect("post_details", pid=post.id)
 

@@ -24,7 +24,6 @@ urlpatterns = [
     # Planet.
     url(r'^planet/$', view_posts.planet_list, name='planet'),
 
-
     # User related actions.
     url(r'^user/list/$', view_users.user_list, name='user_list'),
 

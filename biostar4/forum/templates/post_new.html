@@ -59,13 +59,13 @@
             </div>
 
             <div>
-                {% form_field form.files %}
+                {% form_field form.uploads %}
                 <hr>
             </div>
 
-            {% if form.remove %}
+            {% if form.remove_ids %}
                 <div>
-                    {% form_field form.remove %}
+                    {% form_field form.remove_ids %}
                     <hr>
                 </div>
             {% endif %}
