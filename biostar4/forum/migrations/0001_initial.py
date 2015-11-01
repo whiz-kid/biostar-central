@@ -2,17 +2,17 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import django.utils.timezone
 from django.conf import settings
-import taggit.managers
 import biostar4.forum.models
+import django.utils.timezone
+import taggit.managers
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('sites', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('taggit', '0002_auto_20150616_2121'),
     ]
 
@@ -20,14 +20,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Follower',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
-                ('type', models.IntegerField(choices=[(1, 'Messages'), (2, 'Email'), (3, 'No Messages')], default=2)),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
+                ('type', models.IntegerField(default=2, choices=[(1, 'Messages'), (2, 'Email'), (3, 'No Messages')])),
             ],
         ),
         migrations.CreateModel(
             name='Message',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
                 ('new', models.BooleanField(default=True)),
                 ('content', models.TextField()),
                 ('date', models.DateTimeField(default=django.utils.timezone.now)),
@@ -40,53 +40,51 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Post',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
-                ('status', models.IntegerField(choices=[(1, 'Draft'), (2, 'Pending'), (3, 'Published'), (4, 'Closed'), (5, 'Deleted')], default=3)),
-                ('type', models.IntegerField(choices=[(1, 'Question'), (2, 'Answer'), (3, 'Comment'), (4, 'Tutorial'), (5, 'Forum'), (6, 'Job'), (7, 'Tool'), (8, 'News')], default=5)),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
+                ('status', models.IntegerField(default=3, choices=[(1, 'Draft'), (2, 'Pending'), (3, 'Published'), (4, 'Closed'), (5, 'Deleted')])),
+                ('type', models.IntegerField(default=5, choices=[(1, 'Question'), (2, 'Answer'), (3, 'Comment'), (4, 'Tutorial'), (5, 'Forum'), (6, 'Job'), (7, 'Tool'), (8, 'News')])),
                 ('tag_val', models.CharField(max_length=200, default='')),
                 ('title', models.CharField(max_length=250)),
                 ('uuid', models.CharField(max_length=256, null=True)),
-                ('rank', models.FloatField(blank=True, default=0)),
-                ('vote_count', models.IntegerField(blank=True, default=0, db_index=True)),
-                ('view_count', models.IntegerField(blank=True, default=0)),
-                ('reply_count', models.IntegerField(blank=True, default=0)),
-                ('comment_count', models.IntegerField(blank=True, default=0)),
+                ('rank', models.FloatField(default=0, blank=True)),
+                ('vote_count', models.IntegerField(db_index=True, default=0, blank=True)),
+                ('view_count', models.IntegerField(default=0, blank=True)),
+                ('reply_count', models.IntegerField(default=0, blank=True)),
+                ('comment_count', models.IntegerField(default=0, blank=True)),
                 ('book_count', models.IntegerField(default=0)),
                 ('changed', models.BooleanField(default=True)),
                 ('subs_count', models.IntegerField(default=0)),
-                ('thread_score', models.IntegerField(blank=True, default=0, db_index=True)),
-                ('creation_date', models.DateTimeField(default=django.utils.timezone.now, db_index=True)),
-                ('lastedit_date', models.DateTimeField(default=django.utils.timezone.now, db_index=True)),
-                ('last_activity', models.DateTimeField(default=django.utils.timezone.now, db_index=True)),
-                ('sticky', models.BooleanField(default=False, db_index=True)),
+                ('thread_score', models.IntegerField(db_index=True, default=0, blank=True)),
+                ('creation_date', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
+                ('lastedit_date', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
+                ('last_activity', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
+                ('sticky', models.BooleanField(db_index=True, default=False)),
                 ('has_accepted', models.BooleanField(default=False)),
                 ('text', models.TextField(default='')),
                 ('html', models.TextField(default='')),
                 ('blurb', models.TextField(default='')),
                 ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('followers', models.ManyToManyField(to='forum.Follower', related_name='posts')),
-                ('lastedit_user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, related_name='editor')),
-                ('parent', models.ForeignKey(blank=True, null=True, to='forum.Post', related_name='children')),
-                ('root', models.ForeignKey(blank=True, null=True, to='forum.Post', related_name='descendants')),
-                ('site', models.ForeignKey(null=True, to='sites.Site')),
-                ('tags', taggit.managers.TaggableManager(to='taggit.Tag', verbose_name='Tags', help_text='A comma-separated list of tags.', through='taggit.TaggedItem')),
             ],
+            options={
+                'ordering': ['-lastedit_date'],
+            },
         ),
         migrations.CreateModel(
             name='PostUpload',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
-                ('name', models.CharField(max_length=250, default='File')),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
+                ('name', models.CharField(max_length=500, default='File')),
                 ('file', models.FileField(upload_to=biostar4.forum.models.file_path)),
+                ('post', models.ForeignKey(to='forum.Post')),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
             name='Profile',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
-                ('role', models.IntegerField(choices=[(1, 'New user'), (2, 'Trusted user'), (3, 'Moderator'), (4, 'Admin')], default=1)),
-                ('access', models.IntegerField(choices=[(100, 'Active'), (200, 'Suspended'), (300, 'Banned')], default=100)),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
+                ('role', models.IntegerField(default=1, choices=[(1, 'New user'), (2, 'Trusted user'), (3, 'Moderator'), (4, 'Admin')])),
+                ('access', models.IntegerField(default=100, choices=[(100, 'Active'), (200, 'Suspended'), (300, 'Banned')])),
                 ('name', models.CharField(max_length=100, default='User')),
                 ('score', models.IntegerField(default=0)),
                 ('new_messages', models.IntegerField(default=0)),
@@ -101,14 +99,14 @@ class Migration(migrations.Migration):
                 ('text', models.CharField(max_length=3000, default='')),
                 ('html', models.CharField(max_length=6000, default='')),
                 ('messages', models.ManyToManyField(to='forum.Message')),
-                ('tags', taggit.managers.TaggableManager(to='taggit.Tag', verbose_name='Tags', help_text='A comma-separated list of tags.', through='taggit.TaggedItem')),
+                ('tags', taggit.managers.TaggableManager(through='taggit.TaggedItem', to='taggit.Tag', verbose_name='Tags', help_text='A comma-separated list of tags.')),
             ],
         ),
         migrations.CreateModel(
             name='UserUpload',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
-                ('name', models.CharField(max_length=250, default='File')),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
+                ('name', models.CharField(max_length=500, default='File')),
                 ('file', models.FileField(upload_to=biostar4.forum.models.file_path)),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
@@ -125,8 +123,38 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='post',
-            name='uploads',
-            field=models.ManyToManyField(to='forum.UserUpload'),
+            name='files',
+            field=models.ManyToManyField(related_name='posts', to='forum.PostUpload'),
+        ),
+        migrations.AddField(
+            model_name='post',
+            name='followers',
+            field=models.ManyToManyField(related_name='posts', to='forum.Follower'),
+        ),
+        migrations.AddField(
+            model_name='post',
+            name='lastedit_user',
+            field=models.ForeignKey(related_name='editor', to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='post',
+            name='parent',
+            field=models.ForeignKey(related_name='children', blank=True, to='forum.Post', null=True),
+        ),
+        migrations.AddField(
+            model_name='post',
+            name='root',
+            field=models.ForeignKey(related_name='descendants', blank=True, to='forum.Post', null=True),
+        ),
+        migrations.AddField(
+            model_name='post',
+            name='site',
+            field=models.ForeignKey(null=True, to='sites.Site'),
+        ),
+        migrations.AddField(
+            model_name='post',
+            name='tags',
+            field=taggit.managers.TaggableManager(through='taggit.TaggedItem', to='taggit.Tag', verbose_name='Tags', help_text='A comma-separated list of tags.'),
         ),
         migrations.AddField(
             model_name='follower',

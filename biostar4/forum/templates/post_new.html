@@ -6,9 +6,12 @@
 
 {% block head %}
 
-    <script type="text/javascript" src="{% static "lib/pagedown/Markdown.Converter.js" %}"></script>
-    <script type="text/javascript" src="{% static "lib/pagedown/Markdown.Sanitizer.js" %}"></script>
-    <script type="text/javascript" src="{% static "lib/pagedown/Markdown.Editor.js" %}"></script>
+    <script type="text/javascript"
+            src="{% static "lib/pagedown/Markdown.Converter.js" %}"></script>
+    <script type="text/javascript"
+            src="{% static "lib/pagedown/Markdown.Sanitizer.js" %}"></script>
+    <script type="text/javascript"
+            src="{% static "lib/pagedown/Markdown.Editor.js" %}"></script>
 
     {#  Markdown editor style #}
     <link rel="stylesheet" href={% static "lib/pagedown/markdown.css" %}>
@@ -17,8 +20,9 @@
 
 {% block body %}
 
-    <form method="post" enctype="multipart/form-data" class="uk-form uk-form-stacked uk-width-1-1"
-          action="{% url 'post_new' %}">
+    <form method="post" enctype="multipart/form-data"
+          class="uk-form uk-form-stacked uk-width-1-1"
+          action="{{ action }}">
 
         <div class="block">
             <h2>{{ form_title }}</h2>
@@ -28,21 +32,43 @@
 
             {% form_errors form %}
 
-            {% for field in form %}
-                <div>
-                    {{ field.errors }}
-                    <label class="uk-form-label"
-                           for="{{ field.name }}">{{ field.label_tag }}</label>
+            <div>
+                {% form_field form.title %}
+                <hr>
+            </div>
 
-                    {{ field }}
-                    {% if field.help_text %}
-                        <p class="uk-form-help-block">
-                            {{ field.help_text|safe }}
-                        </p>
-                    {% endif %}
+            <div>
+                {% form_field form.tag_val %}
+                <hr>
+            </div>
+
+            <div class="uk-grid">
+                <div class="uk-width-1-2">
+                    {% form_field form.type %}
+                </div>
+
+                <div class="uk-width-1-2">
+                    {% form_field form.status %}
+                </div>
+            </div>
+
+            <div class="uk-form-row">
+                <hr>
+                {% form_field form.text %}
+                <hr>
+            </div>
+
+            <div>
+                {% form_field form.files %}
+                <hr>
+            </div>
+
+            {% if form.remove %}
+                <div>
+                    {% form_field form.remove %}
                     <hr>
                 </div>
-            {% endfor %}
+            {% endif %}
 
             <div class="uk-form-row user_edit">
                 <button class="uk-button uk-button-success uk-margin-top">Submit</button>

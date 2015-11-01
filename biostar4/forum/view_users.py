@@ -44,7 +44,8 @@ def user_profile(request, user, uid):
 @fill_user
 def user_list(request, user):
     # users = User.objects.all()[:100].defer("profile__text", "profile__html", "profile__files").order_by('-last_login')
-    users = User.objects.all().defer("profile__text", "profile__html").select_related("profile").order_by("-last_login")[:60]
+    users = User.objects.all().defer("profile__text", "profile__html").select_related(
+        "profile").order_by("-last_login")[:60]
     context = dict(
         user=user,
         users=users,
@@ -80,8 +81,24 @@ def votes(request, user):
 def user_edit(request, user):
     profile = user.profile
 
+    initial = dict(
+        name=profile.name,
+        email=user.email,
+        username=user.username,
+        twitter=profile.twitter,
+        scholar=profile.scholar,
+        text=profile.text,
+        location=profile.location,
+        website=profile.website,
+        my_tags=','.join(profile.my_tags),
+        watched_tags=','.join(profile.watched_tags),
+    )
+    # Default form handler
+    form = forms.UserEditForm(user, initial=initial)
+
     if request.method == 'POST':
 
+        # Handle data submission.
         form = forms.UserEditForm(user, request.POST, request.FILES)
 
         if form.is_valid():
@@ -89,9 +106,9 @@ def user_edit(request, user):
             user = forms.update(user, form)
             user.profile = forms.update(profile, form)
 
-            # This way each upload delete method is triggered.
+            # This way the delete methods on uploads are triggered.
             remove_list = request.POST.getlist('remove')
-            for upload in UserUpload.objects.filter(pk__in=remove_list):
+            for upload in UserUpload.objects.filter(user=user, pk__in=remove_list):
                 upload.delete()
 
             # Manage the uploaded files.
@@ -107,21 +124,6 @@ def user_edit(request, user):
 
             # Redirect to profile.
             return redirect("user_profile", uid=user.id)
-
-    else:
-        initial = dict(
-            name=profile.name,
-            email=user.email,
-            username=user.username,
-            twitter=profile.twitter,
-            scholar=profile.scholar,
-            text=profile.text,
-            location=profile.location,
-            website=profile.website,
-            my_tags=','.join(profile.my_tags),
-            watched_tags=','.join(profile.watched_tags),
-        )
-        form = forms.UserEditForm(user, initial=initial)
 
     context = dict(
         user=user,

@@ -225,25 +225,23 @@ class TopLevel(forms.Form):
                             min_length=10, required=True, max_length=250,
                             help_text="Your post title.")
 
-    tags = forms.CharField(label='Tags', max_length=500, min_length=1,
+    tag_val = forms.CharField(label='Tags', max_length=500, min_length=1,
                            validators=[check_tags],
                            widget=forms.TextInput(attrs={'class': 'uk-width-1-1'}),
                            help_text="Post tags, for example: rna-seq Separate multiple tags with commas")
 
-    type = forms.ChoiceField(label="Post type", choices=POST_TYPES,
-                             initial=Post.PUBLISHED, help_text="Select a post type.",
-                             )
-
-    status = forms.ChoiceField(choices=POST_STATUS, initial=Post.PUBLISHED,
-                               help_text="Select a post status. Only published posts will be shown to others",
-                               )
-
-    text = forms.CharField(label="Post body",
+    text = forms.CharField(label="Write your post",
                            initial='',
                            widget=PagedownWidget(),
                            min_length=25,
                            max_length=Post.MAX_CHARS,
                            )
+
+    type = forms.ChoiceField(label="Post type", choices=POST_TYPES,
+                             initial=Post.PUBLISHED)
+
+    status = forms.ChoiceField( label = "State",
+                        choices=POST_STATUS, initial=Post.PUBLISHED)
 
     files = MultiFileField(label="Attach files",
                            min_num=0, max_num=4, required=False,
@@ -252,8 +250,7 @@ class TopLevel(forms.Form):
                                Post.MAX_FILE_NUM, Post.MAX_FILE_SIZE))
 
     remove = forms.MultipleChoiceField(label="Remove uploaded files", required=False,
-                                       widget=forms.CheckboxSelectMultiple
-                                       )
+                                       widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, user, post, *args, **kwargs):
         # Need to access user during field validation.
@@ -263,7 +260,7 @@ class TopLevel(forms.Form):
 
         # Populate the file remove fields.
         if post:
-            choices = [(up.id, str(up.name)) for up in post.files()]
+            choices = [(up.id, str(up.name)) for up in post.files.all()]
         else:
             choices = []
 
@@ -272,12 +269,13 @@ class TopLevel(forms.Form):
         else:
             del self.fields['remove']
 
-    def clean_files(self):
-        text = self.cleaned_data['files']
-        count = len(self.post.files())
-        if text and count > Profile.MAX_FILE_NUM:
-            raise ValidationError('Only {} file uploads are allowed. You have {}'.format(
-                Profile.MAX_FILE_NUM, count))
+    def clean_uploads(self):
+        text = self.cleaned_data['uploads']
+        if self.post:
+            count = len(self.post.files())
+            if text and count > Post.MAX_FILE_NUM:
+                raise ValidationError('Only {} file uploads are allowed. You have {}'.format(
+                    Post.MAX_FILE_NUM, count))
         return text
 
     def clean_status(self):

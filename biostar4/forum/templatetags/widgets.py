@@ -45,6 +45,10 @@ def mark_messages(user):
     Profile.objects.filter(user=user).update(new_messages=0)
     return ''
 
+@register.inclusion_tag('widgets/form_field.html')
+def form_field(field):
+    return dict(field=field)
+
 @register.inclusion_tag('widgets/nav_bar.html')
 def nav_bar(request, user):
     return dict(user=user, request=request)

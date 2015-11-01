@@ -27,17 +27,22 @@ def create_user(email, password):
 
 
 def file_path(instance, filename):
+    oid = "%d" % instance.oid()
     now = timezone.now().strftime('%Y-%m-%d')
-    rnd = random.randint(10000, 90000)
-    key = "{now}/{rnd}-{filename}".format(now=now, rnd=rnd, filename=filename)
+    rnd = random.randint(100, 900)
+    key = "{now}/{oid}-{rnd}-{filename}".format(now=now, oid=oid, rnd=rnd, filename=filename)
     return key
 
 
 class UserUpload(Model):
     "Represents an uploaded file attached to a user"
-    name = CharField(default='File', max_length=250)
+    name = CharField(default='File', max_length=500)
     user = ForeignKey(User)
     file = FileField(upload_to=file_path)
+
+    def oid(self):
+        # Used to figure out upload paths.
+        return self.user.id
 
     def delete(self, *args, **kwds):
         super(UserUpload, self).delete(*args, **kwds)
@@ -46,6 +51,10 @@ class UserUpload(Model):
         except Exception as exc:
             logger.error('*** error deleting upload {} exc:{}'.format(self.id, exc))
 
+    def save(self, *args, **kwargs):
+        # Keep the end with extension if possible.
+        self.name = self.name[-250:]
+        super(UserUpload, self).save(*args, **kwargs)
 
 class Message(Model):
     '''
@@ -215,19 +224,29 @@ class Follower(Model):
         follower = Follower.objects.create(user=user, post=post, type=type)
         post.followers.add(follower)
 
+
 class PostUpload(Model):
     "Represents an uploaded file attached to a post"
-    name = CharField(default='File', max_length=250)
+    name = CharField(default='File', max_length=500)
     user = ForeignKey(User)
+    post = ForeignKey('Post')
     file = FileField(upload_to=file_path)
 
-    def delete(self, *args, **kwds):
-        super(PostUpload, self).delete(*args, **kwds)
+    def oid(self):
+        # Used to figure out upload paths.
+        return self.post.id
+
+    def delete(self, *args, **kwargs):
+        super(PostUpload, self).delete(*args, **kwargs)
         try:
             os.remove(abspath(settings.MEDIA_ROOT, self.file.name))
         except Exception as exc:
             logger.error('*** error deleting upload {} exc:{}'.format(self.id, exc))
 
+    def save(self, *args, **kwargs):
+        # Keep the end with extension if possible.
+        self.name = self.name[-250:]
+        super(PostUpload, self).save(*args, **kwargs)
 
 class Post(Model):
     # How many files may be attached to posts.
@@ -357,7 +376,7 @@ class Post(Model):
     site = ForeignKey(Site, null=True)
 
     # Uploads attached to the post
-    uploads = ManyToManyField(UserUpload)
+    files = ManyToManyField(PostUpload, related_name='posts')
 
     # Notification to users.
     followers = ManyToManyField(Follower, related_name="posts")
@@ -365,8 +384,8 @@ class Post(Model):
     class Meta:
         ordering = ['-lastedit_date']
 
-    def files(self):
-        return self.uploads.all()
+    def get_files(self):
+        return self.files.all()
 
     def save(self, *args, **kwargs):
         self.html = html.sanitize(self.text)

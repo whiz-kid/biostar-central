@@ -1,0 +1,10 @@
+{{ field.errors }}
+<label class="uk-form-label"
+       for="{{ field.name }}">{{ field.label_tag }}</label>
+
+{{ field }}
+{% if field.help_text %}
+    <p class="uk-form-help-block uk-text-muted">
+        {{ field.help_text|safe }}
+    </p>
+{% endif %}

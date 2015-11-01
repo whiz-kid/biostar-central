@@ -14,12 +14,22 @@
             <div class="post_title uk-margin-bottom">{{ post.title }}</div>
             <div>{{ post.html|safe }}</div>
 
-            <a href='{%  url "post_edit" pid=post.id %}'>EDIT</a>
+            <a href='{% url "post_edit" pid=post.id %}'>EDIT</a>
         </div>
 
-        {%  if post.uploads.all %}
-            Files: {{ post.uploads.all }}
-        {%  endif %}
+        {% if post.files.all %}
+            <div>
+                <hr>
+                Attached files:
+                <ul>
+                    {% for upload in post.files.all %}
+                        <li>
+                            <a href="/media/{{ upload.file }}">{{ upload.name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
         {% tag_line post %}
 
