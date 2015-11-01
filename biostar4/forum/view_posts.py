@@ -38,6 +38,8 @@ def post_details(request, user, post):
 @login_required
 @fill_user
 def post_new(request, user):
+    "New toplevel post"
+
     if request.method == 'POST':
         form = forms.TopLevel(user, None, request.POST, request.FILES)
         if form.is_valid():
@@ -50,6 +52,31 @@ def post_new(request, user):
         user=user,
         form=form,
         form_title='Create a new post'
+    )
+
+    return render(request, "post_new.html", context=context)
+
+@login_required
+@edit_post
+def post_edit(request, user, post):
+    "Edit toplevel post"
+
+    if request.method == 'POST':
+        form = forms.TopLevel(user, post, request.POST, request.FILES)
+        if form.is_valid():
+            #post = auth.create_toplevel_post(user=user, data=form.cleaned_data)
+            return redirect("post_details", pid=post.id)
+    else:
+        initial = dict(
+            title=post.title,
+            tag_val=post.tag_val
+        )
+        form = forms.TopLevel(user=user, post=post, initial=initial)
+
+    context = dict(
+        user=user,
+        form=form,
+        form_title='Edit post'
     )
 
     return render(request, "post_new.html", context=context)

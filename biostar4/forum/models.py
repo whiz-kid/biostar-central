@@ -365,6 +365,9 @@ class Post(Model):
     class Meta:
         ordering = ['-lastedit_date']
 
+    def files(self):
+        return self.uploads.all()
+
     def save(self, *args, **kwargs):
         self.html = html.sanitize(self.text)
         self.blurb = html.strip_tags(self.text)[:200]

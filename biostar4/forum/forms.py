@@ -272,6 +272,14 @@ class TopLevel(forms.Form):
         else:
             del self.fields['remove']
 
+    def clean_files(self):
+        text = self.cleaned_data['files']
+        count = len(self.post.files())
+        if text and count > Profile.MAX_FILE_NUM:
+            raise ValidationError('Only {} file uploads are allowed. You have {}'.format(
+                Profile.MAX_FILE_NUM, count))
+        return text
+
     def clean_status(self):
         text = self.cleaned_data['status']
         return int(text)
