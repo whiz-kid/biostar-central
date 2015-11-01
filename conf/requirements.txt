@@ -9,4 +9,4 @@ wheel==0.24.0
 django-ratelimit==0.6.0
 django-taggit==0.17.3
 Whoosh==2.7.0
-
+fake-factory
