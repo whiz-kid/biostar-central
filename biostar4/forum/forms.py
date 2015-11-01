@@ -245,15 +245,32 @@ class TopLevel(forms.Form):
                            max_length=Post.MAX_CHARS,
                            )
 
-    upload = forms.FileField(label="You may attach a file.", required=False,
-                             help_text="This file will be added to the post. Must be smaller than 10Mb",
-                             )
+    files = MultiFileField(label="Attach files",
+                           min_num=0, max_num=4, required=False,
+                           max_file_size=1024 * 1024 * Post.MAX_FILE_SIZE,
+                           help_text="Files attached to the post. You may attach {} files, {} Mb per file.".format(
+                               Post.MAX_FILE_NUM, Post.MAX_FILE_SIZE))
 
-    files = forms.CharField(label="Previously attached files",
-                            widget=forms.Textarea(
-                                attrs={'rows': '2', 'class': 'uk-width-1-1'}),
-                            help_text="Deleting the name deletes attached file.",
-                            required=False)
+    remove = forms.MultipleChoiceField(label="Remove uploaded files", required=False,
+                                       widget=forms.CheckboxSelectMultiple
+                                       )
+
+    def __init__(self, user, post, *args, **kwargs):
+        # Need to access user during field validation.
+        super(TopLevel, self).__init__(*args, **kwargs)
+        self.user = user
+        self.post = post
+
+        # Populate the file remove fields.
+        if post:
+            choices = [(up.id, str(up.name)) for up in post.files()]
+        else:
+            choices = []
+
+        if choices:
+            self.fields['remove'].choices = choices
+        else:
+            del self.fields['remove']
 
     def clean_status(self):
         text = self.cleaned_data['status']

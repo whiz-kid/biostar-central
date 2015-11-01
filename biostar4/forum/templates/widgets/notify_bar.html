@@ -1,13 +1,10 @@
 {% load widgets %}
 
-<!--
-<div class="notify_bar">
-    {% for note in post.notify %}
+<div class="follower_bar uk-width-1-1">
+    {% for follower in post.followers.all %}
         <div class="uk-float-left uk-margin-right">
-            <img class="uk-border-circle" src="{% gravatar user=note.user size=25 %}"
-                 alt="">
-            {{ note.user.username }}
+            <img class="uk-border-circle" src="{% gravatar user=follower.user size=25 %}" alt="">
+            {{ follower.user.username }}
         </div>
     {% endfor %}
 </div>
--->

@@ -23,3 +23,23 @@ def create_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance, name=name)
         # Since we only ask for email we'll make a nicer username.
         User.objects.filter(id=instance.id).update(username='user%d' % instance.id)
+
+@receiver(post_save, sender=Post)
+def create_post(sender, instance, created, **kwargs):
+    """
+    Adds the post author as a follower.
+    """
+    if created:
+
+        if instance.is_toplevel():
+            # Set the root and parent.
+            instance.root = instance.parent = instance
+            instance.save()
+            follow_type = Follower.EMAIL
+        else:
+            follow_type = Follower.MESSAGES
+
+        # Add the post creator as a follower.
+        Follower.add(post=instance.root, user=instance.author, type=follow_type)
+
+

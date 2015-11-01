@@ -15,7 +15,9 @@
             <div>{{ post.html|safe }}</div>
         </div>
 
-        Files: {{ post.files }}
+        {%  if post.uploads.all %}
+            Files: {{ post.uploads.all }}
+        {%  endif %}
 
         {% tag_line post %}
 

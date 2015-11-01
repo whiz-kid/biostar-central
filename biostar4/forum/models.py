@@ -8,8 +8,10 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 import os, random, logging
 from django.conf import settings
+from django.db.models import F
 
 logger = logging.getLogger('biostar')
+
 
 def abspath(*args):
     return os.path.abspath(os.path.join(*args))
@@ -44,15 +46,43 @@ class UserUpload(Model):
         except Exception as exc:
             logger.error('*** error deleting upload {} exc:{}'.format(self.id, exc))
 
+
+class Message(Model):
+    '''
+    Represents a message to the user
+    '''
+    # How many messages to retain per user.
+    MAX_MESSAGES = 50
+
+    user = ForeignKey(User)
+    new = BooleanField(default=True)
+    content = TextField(null=False, blank=False)
+    date = DateTimeField(default=timezone.now)
+
+    @staticmethod
+    def create_message(user, text):
+        "Creates a message for the user"
+        msg = Message.objects.create(user=user, content=text)
+        user.profile.messages.add(msg)
+        Profile.objects.filter(user=user).update(new_messages=F('new_messages') + 1)
+
+    @staticmethod
+    def limit_messages(user):
+        "Limits messages per user"
+        pks = Message.objects.filter(user=user).values_list("id", flat=True)[
+              :Message.MAX_MESSAGES]
+        Message.objects.filter(user=user).exclude(pk__in=pks).delete()
+
+    class Meta:
+        ordering = ['-date']
+
+
 class Profile(Model):
     # File size in megabytes.
     MAX_FILE_SIZE = 5
 
     # How many files may be attached per user.
     MAX_FILE_NUM = 10
-
-    # How many messages to retain per user.
-    MAX_MESSAGES = 50
 
     # Valid user roles types.
     NEW_USER, TRUSTED_USER, MODERATOR, ADMIN = [1, 2, 3, 4]
@@ -66,7 +96,7 @@ class Profile(Model):
     ]
 
     # Moderator roles.
-    MODERATOR_ROLES ={MODERATOR, ADMIN}
+    MODERATOR_ROLES = {MODERATOR, ADMIN}
 
     # User role quick lookup.
     USER_ROLES_MAP = dict(USER_ROLES)
@@ -103,7 +133,6 @@ class Profile(Model):
     def is_suspended(self):
         return self.access != self.ACTIVE
 
-
     user = OneToOneField(User)
     name = CharField(max_length=100, default="User")
     score = IntegerField(default=0)
@@ -122,6 +151,9 @@ class Profile(Model):
 
     tags = TaggableManager()
 
+    # Messages for the user.
+    messages = ManyToManyField(Message)
+
     def files(self):
         return self.uploads.all()
 
@@ -131,7 +163,6 @@ class Profile(Model):
 
 
 class PostManager(Manager):
-
     def build(self, query):
         "Adds related and prefetch elements to the query."
         return query.select_related("root", "author", "author__profile", "lastedit_user",
@@ -166,12 +197,32 @@ class PostManager(Manager):
         return query
 
 
+class Follower(Model):
+    "Represents an uploaded file attached to a post"
+    MESSAGES, EMAIL, NOFOLLOW = [1, 2, 3]
+    NOTIFY_CHOICES = [
+        (MESSAGES, "Messages"),
+        (EMAIL, "Email"),
+        (NOFOLLOW, "No Messages")
+    ]
+    user = ForeignKey(User)
+    post = ForeignKey('Post')
+    type = IntegerField(choices=NOTIFY_CHOICES, default=EMAIL)
+
+    @staticmethod
+    def add(user, post, type=None):
+        type = type or Follower.EMAIL
+        follower = Follower.objects.create(user=user, post=post, type=type)
+        post.followers.add(follower)
+
 class PostUpload(Model):
     "Represents an uploaded file attached to a post"
+    name = CharField(default='File', max_length=250)
     user = ForeignKey(User)
     file = FileField(upload_to=file_path)
 
     def delete(self, *args, **kwds):
+        super(PostUpload, self).delete(*args, **kwds)
         try:
             os.remove(abspath(settings.MEDIA_ROOT, self.file.name))
         except Exception as exc:
@@ -179,6 +230,12 @@ class PostUpload(Model):
 
 
 class Post(Model):
+    # How many files may be attached to posts.
+    MAX_FILE_NUM = 4
+
+    # File size in  megabytes.
+    MAX_FILE_SIZE = 5
+
     # Maximal character size for a post.
     MAX_CHARS = 15000
 
@@ -299,8 +356,14 @@ class Post(Model):
     # What site does the post belong to.
     site = ForeignKey(Site, null=True)
 
-    # Notification to users
-    #notify = ManyToManyField(User)
+    # Uploads attached to the post
+    uploads = ManyToManyField(UserUpload)
+
+    # Notification to users.
+    followers = ManyToManyField(Follower, related_name="posts")
+
+    class Meta:
+        ordering = ['-lastedit_date']
 
     def save(self, *args, **kwargs):
         self.html = html.sanitize(self.text)

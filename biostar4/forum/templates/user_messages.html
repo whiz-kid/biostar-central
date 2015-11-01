@@ -8,8 +8,8 @@
 
     User messages
 
-    {% for message in user.messages %}
-        <div class="message new {{ message.new }}">{{ message.html }}</div>
+    {% for message in user.profile.messages.all %}
+        <div class="message new {{ message.new }}">{{ message.content|safe }}</div>
     {% endfor %}
 
     {%  mark_messages user %}

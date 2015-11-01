@@ -19,6 +19,7 @@ def me(request, user):
 def my_site(request, user):
     # posts = Post.objects.filter(ptype__in=Post.TOP_LEVEL, author=user).exclude("html").order_by('lastedit_date')[:100]
     posts = []
+    Message.create_message(user, "Test message goes here")
     context = dict(
         user=user,
         posts=posts
@@ -43,7 +44,7 @@ def user_profile(request, user, uid):
 @fill_user
 def user_list(request, user):
     # users = User.objects.all()[:100].defer("profile__text", "profile__html", "profile__files").order_by('-last_login')
-    users = User.objects.all()[:100].select_related("profile")
+    users = User.objects.all().defer("profile__text", "profile__html").select_related("profile").order_by("-last_login")[:60]
     context = dict(
         user=user,
         users=users,
@@ -52,7 +53,9 @@ def user_list(request, user):
 
 
 @login_required
+@fill_user
 def messages(request, user):
+    Message.limit_messages(user)
     user.new_messages = 0
     user.save()
     context = dict(
@@ -62,6 +65,7 @@ def messages(request, user):
 
 
 @login_required
+@fill_user
 def votes(request, user):
     user.new_votes = 0
     user.save()

@@ -39,14 +39,12 @@ def post_details(request, user, post):
 @fill_user
 def post_new(request, user):
     if request.method == 'POST':
-        form = forms.TopLevel(request.POST, request.FILES)
-        # Save uploaded file.
-        stream = request.FILES.get('upload')
+        form = forms.TopLevel(user, None, request.POST, request.FILES)
         if form.is_valid():
             post = auth.create_toplevel_post(user=user, data=form.cleaned_data)
             return redirect("post_details", pid=post.id)
     else:
-        form = forms.TopLevel()
+        form = forms.TopLevel(user=user, post=None)
 
     context = dict(
         user=user,

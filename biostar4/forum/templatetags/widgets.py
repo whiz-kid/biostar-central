@@ -5,6 +5,7 @@ import hashlib
 from urllib.parse import urlencode
 from datetime import datetime, timedelta
 from django.utils import timezone
+from biostar4.forum.models import Message, Profile
 
 def now():
     return timezone.now()
@@ -40,9 +41,8 @@ def plusnum(value):
 @register.simple_tag
 def mark_messages(user):
     "Marks all messages as read"
-    for message in user.messages:
-        message.new = False
-    user.save()
+    Message.objects.filter(user=user).update(new=False)
+    Profile.objects.filter(user=user).update(new_messages=0)
     return ''
 
 @register.inclusion_tag('widgets/nav_bar.html')

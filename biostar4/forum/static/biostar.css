@@ -103,8 +103,7 @@ body {
     display: block;
 }
 
-.notify_bar {
-    width: 100%;
+.follower_bar {
     border-top: 1px solid #ECECEC;
     border-bottom: 1px solid #ECECEC;
     margin-top: 2ex;
