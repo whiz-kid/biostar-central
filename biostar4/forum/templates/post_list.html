@@ -23,16 +23,17 @@
 
             </div>
 
-            <div class="post_title">
-                <a href="{%  url 'post_details' pid=post.id %}">{{ post.title }}</a>
-            </div>
-
             <div class="hold">
-                <div style="overflow:auto">
+
+                <div class="post_title">
+                    <a href="{% url 'post_details' pid=post.id %}">{{ post.title }}</a>
+                </div>
+
+                <div class="blurb" style="">
                     {{ post.blurb }}...
                 </div>
 
-                {%  tag_line post %}
+                {% tag_line post %}
 
             </div>
 

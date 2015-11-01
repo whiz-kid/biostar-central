@@ -5,7 +5,7 @@
     {% endfor %}
 </div>
 
-<div class="uk-text-muted">
+<div class="muted">
     posted {{ post.creation_date|time_ago }} ago by <a
         href="{% url "user_profile" uid=post.author_id %}">{{ post.author.profile.name }}</a>
     {% if post.lastedit_user %}

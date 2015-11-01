@@ -14,8 +14,12 @@ def edit_user(user, data):
     user.profile = update(user.profile, data)
 
 
-def manage_user_files(user, files=[], remove_ids=[]):
+def set_user_files(request, user):
     "Manages user file uploads"
+
+    remove_ids = request.POST.getlist('remove_ids')
+    files = request.FILES.getlist('uploads')
+
     for file in files:
         upload = UserUpload.objects.create(file=file, user=user, name=file.name)
         user.profile.files.add(upload)
@@ -25,8 +29,11 @@ def manage_user_files(user, files=[], remove_ids=[]):
         upload.delete()
 
 
-def manage_post_files(user, post, files=[], remove_ids=[]):
-    "Manage post file uploads"
+def set_post_files(request, user, post):
+    "Manage post file uploads."
+    remove_ids = request.POST.getlist('remove_ids')
+    files = request.FILES.getlist('uploads')
+
     for file in files:
         upload = PostUpload.objects.create(file=file, user=user, post=post, name=file.name)
         post.files.add(upload)
@@ -35,15 +42,17 @@ def manage_post_files(user, post, files=[], remove_ids=[]):
         # Triggers the delete to remove the file as well.
         upload.delete()
 
+def new_toplevel_post(user, data):
+    "Creates a toplevel post."
+    post = Post(author=user)
+    post = edit_toplevel_post(user=user, post=post, data=data)
+    return post
+
 def edit_toplevel_post(user, data, post=None):
-    "Edits or creates a toplevel post from incoming parameters"
+    "Edits a toplevel post."
     get = data.get
     title, text, ptype = get('title'), get('text'), get('type')
     tag_val, status = get('tag_val'), get('status')
-
-    if not post:
-        # Creates the post
-        post = Post(author=user)
 
     # Update post attributes.
     post.title = title

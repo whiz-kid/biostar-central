@@ -76,6 +76,9 @@ class UserTest(TestBase):
         self.TRUE(User.objects.filter(email=email, username=username, profile__name=name))
         self.TRUE(Profile.objects.filter(scholar=scholar, twitter=twitter))
 
+def fake_tags(num=3):
+    out = [fake.word()[:5] for x in range(num)]
+    return ",".join(out)
 
 class PostTest(TestBase):
     def setUp(self):
@@ -88,29 +91,56 @@ class PostTest(TestBase):
         )
         signup = reverse("signup")
         self.c.post(signup, {'email': self.user.email, 'password': self.user.password})
-
         self.post_new = reverse("post_new")
-        self.post = Post(
+
+
+    def make_post(self):
+        "Makes a random toplevel post"
+        post = Post(
             title=fake.sentence(),
-            tag_val=" ".join(fake.words()),
+            tag_val=fake_tags(),
             text=fake.paragraph(),
+            status=Post.PUBLISHED,
+            type=Post.QUESTION,
         )
+
+        r = self.c.post(self.post_new, {
+            'title': post.title,
+            'tag_val': post.tag_val,
+            'text': post.text,
+            'status': post.status,
+            'type': post.type,
+        })
+
+        post = Post.objects.filter(title=post.title).first()
+
+        return post
 
     def test_incomplete_post(self):
         "Incomplete post."
         r = self.c.post(self.post_new, {
-            'title': self.post.title,
-            'tag_val': self.post.tag_val
+            'title': 'Post title',
         })
         self.EQ(r.status_code, 200)
         self.IN(r, "error")
 
     def test_full_post(self):
-        "Full post"
-        r = self.c.post(self.post_new, {
-            'title': self.post.title,
-            'tag_val': self.post.tag_val,
-            'text': self.post.text,
+        post = self.make_post()
+        self.TRUE(post)
+
+    def test_edit_post(self):
+        post = self.make_post()
+
+        # Edit post.
+        self.post_edit = reverse("post_edit", kwargs=dict(pid=post.id))
+        new_title = fake.sentence()
+        r = self.c.post(self.post_edit, {
+            'title': new_title,
+            'tag_val': post.tag_val,
+            'text': post.text,
+            'status': post.status,
+            'type': post.type,
         })
-        self.EQ(r.status_code, 200)
-        self.IN(r, self.post.title)
+        self.EQ(r.status_code, 302)
+        post = Post.objects.get(pk=post.id)
+        self.EQ(post.title, new_title)

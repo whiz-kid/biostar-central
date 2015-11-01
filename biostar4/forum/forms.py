@@ -15,7 +15,9 @@ class PagedownWidget(forms.Textarea):
 
     def render(self, name, value, attrs=None):
         value = value or ''
-        params = dict(value=value)
+        rows = attrs.get('rows', 15)
+        klass = attrs.get('class', '')
+        params = dict(value=value, rows=rows, klass=klass)
         return render_to_string(self.TEMPLATE, params)
 
 
@@ -91,13 +93,13 @@ class LoginForm(forms.Form):
 class UserEditForm(forms.Form):
     name = forms.CharField(label='Name',
                            min_length=1, required=True, max_length=100,
-                           help_text="The name displayed on for you.")
+                           help_text="The name displayed for you.")
 
     email = forms.CharField(label='Email', required=True,
                             help_text="Your email on the site")
 
     username = forms.CharField(label='Username', required=True, max_length=10,
-                               help_text=" Your <code>@username</code> on this site. 10 letter max. Must be unique.")
+                               help_text="A short identifier: can be used as <code>@username</code>")
 
     twitter = forms.CharField(label='Twitter',
                               required=False,
@@ -131,21 +133,22 @@ class UserEditForm(forms.Form):
                            max_length=3000)
 
     uploads = MultiFileField(label="Attach files",
-                           min_num=0, max_num=Profile.MAX_FILE_NUM, required=False,
-                           max_file_size=1024 * 1024 * Profile.MAX_FILE_SIZE,
-                           help_text="Files shown on your profile. You may upload {} files, {} Mb per file.".format(
-                               Profile.MAX_FILE_NUM, Profile.MAX_FILE_SIZE))
+                             min_num=0, max_num=Profile.MAX_FILE_NUM, required=False,
+                             max_file_size=1024 * 1024 * Profile.MAX_FILE_SIZE,
+                             help_text="Files shown on your profile. You may upload {} files, {} Mb per file.".format(
+                                 Profile.MAX_FILE_NUM, Profile.MAX_FILE_SIZE))
 
     remove_ids = forms.MultipleChoiceField(label="Remove uploaded files", required=False,
-                                       widget=forms.CheckboxSelectMultiple
-                                       )
+                                           widget=forms.CheckboxSelectMultiple
+                                           )
 
     def clean_uploads(self):
         files = self.cleaned_data['uploads']
         count = len(self.user.profile.files.all()) + len(files)
         if count > Profile.MAX_FILE_NUM:
-            raise ValidationError('Only {} file uploads are allowed per user. You have {}'.format(
-                Profile.MAX_FILE_NUM, count))
+            raise ValidationError(
+                'Only {} file uploads are allowed per user. You have {}'.format(
+                    Profile.MAX_FILE_NUM, count))
         return files
 
     def clean_email(self):
@@ -213,13 +216,12 @@ class TopLevel(forms.Form):
 
     title = forms.CharField(label='Post title',
                             widget=forms.TextInput(attrs={"class": "uk-width-1-1"}),
-                            min_length=10, required=True, max_length=250,
-                            help_text="Your post title.")
+                            min_length=10, required=True, max_length=250)
 
     tag_val = forms.CharField(label='Tags', max_length=500, min_length=1,
-                           validators=[check_tags],
-                           widget=forms.TextInput(attrs={'class': 'uk-width-1-1'}),
-                           help_text="Post tags, for example: rna-seq Separate multiple tags with commas")
+                              validators=[check_tags],
+                              widget=forms.TextInput(attrs={'class': 'uk-width-1-1'}),
+                              help_text="Example: <code>samtools, bwa</code>")
 
     text = forms.CharField(label="Write your post",
                            initial='',
@@ -231,17 +233,17 @@ class TopLevel(forms.Form):
     type = forms.ChoiceField(label="Post type", choices=POST_TYPES,
                              initial=Post.PUBLISHED)
 
-    status = forms.ChoiceField( label = "State",
-                        choices=POST_STATUS, initial=Post.PUBLISHED)
+    status = forms.ChoiceField(label="State",
+                               choices=POST_STATUS, initial=Post.PUBLISHED)
 
     uploads = MultiFileField(label="Attach files",
-                           min_num=0, max_num=Post.MAX_FILE_NUM, required=False,
-                           max_file_size=1024 * 1024 * Post.MAX_FILE_SIZE,
-                           help_text="Files attached to the post. You may attach {} files, {} Mb per file.".format(
-                               Post.MAX_FILE_NUM, Post.MAX_FILE_SIZE))
+                             min_num=0, max_num=Post.MAX_FILE_NUM, required=False,
+                             max_file_size=1024 * 1024 * Post.MAX_FILE_SIZE,
+                             help_text="You may attach up to {} files, {} Mb per file.".format(
+                                 Post.MAX_FILE_NUM, Post.MAX_FILE_SIZE))
 
     remove_ids = forms.MultipleChoiceField(label="Remove uploaded files", required=False,
-                                       widget=forms.CheckboxSelectMultiple)
+                                           widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, user, post, *args, **kwargs):
         # Need to access user during field validation.
@@ -265,8 +267,9 @@ class TopLevel(forms.Form):
         if self.post:
             count = len(self.post.files.all()) + len(files)
             if count > Post.MAX_FILE_NUM:
-                raise ValidationError('Only {} file uploads are allowed per post. You have {}'.format(
-                    Post.MAX_FILE_NUM, count))
+                raise ValidationError(
+                    'Only {} file uploads are allowed per post. You have {}'.format(
+                        Post.MAX_FILE_NUM, count))
         return files
 
     def clean_status(self):
@@ -284,3 +287,10 @@ class TopLevel(forms.Form):
         text = self.cleaned_data['tag_val']
         tags = parse_tags(text)
         return ",".join(tags)
+
+
+class Content(forms.Form):
+    text = forms.CharField(label="Add your answer",
+                           initial='', widget=PagedownWidget(),
+                           min_length=25,max_length=Post.MAX_CHARS,
+                           )

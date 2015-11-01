@@ -110,9 +110,7 @@ def user_edit(request, user):
             auth.edit_user(user, form.cleaned_data)
 
             # Manage uploaded files.
-            remove_ids = request.POST.getlist('remove_ids')
-            files = request.FILES.getlist('uploads')
-            auth.manage_user_files(user=user, files=files, remove_ids=remove_ids)
+            auth.set_user_files(request, user=user)
 
             # State is saved only here
             user.save()

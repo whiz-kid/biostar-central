@@ -36,25 +36,27 @@ def post_details(request, user, post):
     )
     return render(request, "post_details.html", context=context)
 
-
 @login_required
 @fill_user
-def post_new(request, user):
-    "New toplevel post"
+def post_new(request, user, type=Post.QUESTION):
+    "New post"
 
-    # The is the default form handler.
-    form = forms.TopLevel(user=user, post=None)
+    if type in Post.TOP_LEVEL:
+        FormClass = forms.TopLevel
+        create_method = auth.new_toplevel_post
+    else:
+        FormClass = forms.Content
+        create_method = auth.new_toplevel_post
+        1/0
+
+    # Instantiate the form class
+    form = FormClass(user=user, post=None)
 
     if request.method == 'POST':
-        form = forms.TopLevel(user, None, request.POST, request.FILES)
+        form = FormClass(user, None, request.POST, request.FILES)
         if form.is_valid():
-            post = auth.edit_toplevel_post(user=user, post=None, data=form.cleaned_data)
-
-            # Manage uploaded files.
-            remove_ids = request.POST.getlist('remove_ids')
-            files = request.FILES.getlist('uploads')
-            auth.manage_post_files(user=user, post=post, files=files, remove_ids=remove_ids)
-
+            post = create_method(user=user, data=form.cleaned_data)
+            auth.set_post_files(request, user=user, post=post)
             return redirect("post_details", pid=post.id)
 
     context = dict(
@@ -64,7 +66,7 @@ def post_new(request, user):
         action=reverse("post_new")
     )
 
-    return render(request, "post_new.html", context=context)
+    return render(request, "post_edit.html", context=context)
 
 
 @login_required
@@ -77,30 +79,39 @@ def post_edit(request, user, post):
         type=post.type, status=post.status,
         text=post.text,
     )
-    form = forms.TopLevel(user=user, post=post, initial=initial)
+
+    if post.is_toplevel():
+        FormClass = forms.TopLevel
+        edit_method = auth.edit_toplevel_post
+        form_title = "Edit post"
+    else:
+        FormClass = forms.Content
+        edit_method = auth.edit_toplevel_post
+        form_title = "Edit content"
+
+    # Initialize form class.
+    form = FormClass(user=user, post=post, initial=initial)
 
     if request.method == 'POST':
-        form = forms.TopLevel(user, post, request.POST, request.FILES)
+        form = FormClass(user, post, request.POST, request.FILES)
         if form.is_valid():
 
             # Update the post data.
-            post = auth.edit_toplevel_post(user=user, post=post, data=form.cleaned_data)
+            post = edit_method(user=user, post=post, data=form.cleaned_data)
 
             # Manage uploaded files.
-            remove_ids = request.POST.getlist('remove_ids')
-            files = request.FILES.getlist('uploads')
-            auth.manage_post_files(user=user, post=post, files=files, remove_ids=remove_ids)
+            auth.set_post_files(request, user=user, post=post)
 
             return redirect("post_details", pid=post.id)
 
     context = dict(
         user=user,
         form=form,
-        form_title='Edit post',
+        form_title=form_title,
         action=reverse("post_edit", kwargs=dict(pid=post.id))
     )
 
-    return render(request, "post_new.html", context=context)
+    return render(request, "post_edit.html", context=context)
 
 
 @fill_user
