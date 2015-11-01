@@ -2,8 +2,9 @@
 
 body {
     color: #363636;
-    font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 16px;
+    font-family: arial, helvetica, sans-serif;
+
+    font-size: 14px;
     line-height: normal;
     margin-top: 5px;
 }
@@ -15,7 +16,7 @@ body {
 
 .boxes {
     margin-right: 5px;
-    width: 7em;
+    //width: 8em;
     float: left;
     display: block;
     overflow: hidden;
@@ -24,7 +25,7 @@ body {
 
 .boxes > .box {
     padding: 1px;
-    width: 3em;
+    width: 4em;
     text-align: center;
     float: left;
     vertical-align: middle;
@@ -59,7 +60,7 @@ body {
 }
 
 .post_title {
-    font-weight: 500;
+    font-weight: bold;
     font-size: larger;
 }
 

@@ -270,8 +270,11 @@ class TopLevel(forms.Form):
         return files
 
     def clean_status(self):
-        text = self.cleaned_data['status']
-        return int(text)
+        value = self.cleaned_data['status']
+        value = int(value)
+        if self.post and (value == Post.DRAFT) and (self.user != self.post.author):
+            raise ValidationError('Only post authors may set draft status')
+        return value
 
     def clean_type(self):
         text = self.cleaned_data['type']
