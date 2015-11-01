@@ -48,7 +48,7 @@ def new_toplevel_post(user, data):
     post = edit_toplevel_post(user=user, post=post, data=data)
     return post
 
-def edit_toplevel_post(user, data, post=None):
+def edit_toplevel_post(user, post, data):
     "Edits a toplevel post."
     get = data.get
     title, text, ptype = get('title'), get('text'), get('type')
@@ -59,6 +59,7 @@ def edit_toplevel_post(user, data, post=None):
     post.text = text
     post.type = ptype
     post.lastedit_user = user
+    post.lastedit_date = None
     post.status = status
     post.tag_val = tag_val
     post.save()
@@ -69,4 +70,19 @@ def edit_toplevel_post(user, data, post=None):
 
     return post
 
+def new_content_post(user, data):
+    "Creates a toplevel post."
+    post = Post(author=user)
+    post = edit_content_post(user=user, post=post, data=data)
+    return post
 
+def edit_content_post(user, post, data):
+    "Edits a content post"
+    get = data.get
+    text, ptype, parent = get('text'), get('type'), get('parent')
+    post.lastedit_user = user
+    post.type = ptype
+    post.parent = parent
+    post.save()
+
+    return post

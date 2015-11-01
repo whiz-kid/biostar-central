@@ -385,6 +385,7 @@ class Post(Model):
         return self.files.all()
 
     def save(self, *args, **kwargs):
+        self.lastedit_date = self.lastedit_date or timezone.now()
         self.html = html.sanitize(self.text)
         self.blurb = html.strip_tags(self.text)[:200]
         super(Post, self).save(*args, **kwargs)

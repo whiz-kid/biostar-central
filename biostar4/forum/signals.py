@@ -37,6 +37,8 @@ def create_post(sender, instance, created, **kwargs):
             instance.save()
             follow_type = Follower.EMAIL
         else:
+            instance.root = instance.parent.root
+            instance.save()
             follow_type = Follower.MESSAGES
 
         # Add the post creator as a follower.

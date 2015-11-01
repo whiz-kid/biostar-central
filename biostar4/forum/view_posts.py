@@ -36,18 +36,25 @@ def post_details(request, user, post):
     )
     return render(request, "post_details.html", context=context)
 
+
 @login_required
 @fill_user
-def post_new(request, user, type=Post.QUESTION):
+def post_new_content(request, user):
+    return post_new(request=request, user=user, toplevel=False)
+
+@login_required
+@fill_user
+def post_new(request, user, toplevel=True):
     "New post"
 
-    if type in Post.TOP_LEVEL:
+    if toplevel:
         FormClass = forms.TopLevel
         create_method = auth.new_toplevel_post
+        form_title = 'Create post'
     else:
         FormClass = forms.Content
-        create_method = auth.new_toplevel_post
-        1/0
+        create_method = auth.new_content_post
+        form_title = 'Create content'
 
     # Instantiate the form class
     form = FormClass(user=user, post=None)
@@ -62,7 +69,7 @@ def post_new(request, user, type=Post.QUESTION):
     context = dict(
         user=user,
         form=form,
-        form_title='Create a new post',
+        form_title=form_title,
         action=reverse("post_new")
     )
 
