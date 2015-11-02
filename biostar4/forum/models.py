@@ -219,9 +219,10 @@ class Follower(Model):
     @staticmethod
     def add(user, post, type=None):
         type = type or Follower.EMAIL
-        follower = Follower.objects.create(user=user, post=post, type=type)
-        post.followers.add(follower)
-
+        exists = Follower.objects.filter(user=user, post=post.root).first()
+        if not exists:
+            follower = Follower.objects.create(user=user, post=post.root, type=type)
+            post.followers.add(follower)
 
 class PostUpload(Model):
     "Represents an uploaded file attached to a post"
