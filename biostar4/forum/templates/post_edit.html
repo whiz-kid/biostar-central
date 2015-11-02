@@ -32,6 +32,7 @@
 
             {% form_errors form %}
 
+            {%  if form.toplevel %}
             <div>
                 {% form_field form.title %}
                 <hr>
@@ -51,6 +52,7 @@
                     {% form_field form.status %}
                 </div>
             </div>
+            {%  endif %}
 
             <div class="uk-form-row">
                 <hr>

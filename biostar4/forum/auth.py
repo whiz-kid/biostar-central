@@ -79,10 +79,14 @@ def new_content_post(user, data):
 def edit_content_post(user, post, data):
     "Edits a content post"
     get = data.get
-    text, ptype, parent = get('text'), get('type'), get('parent')
+    text, parent_id, status = get('text'),  get('parent'), get('status', Post.PUBLISHED)
+    parent = Post.objects.get(id=parent_id)
+    ptype = Post.ANSWER if parent.is_toplevel() else Post.COMMENT
     post.lastedit_user = user
     post.type = ptype
+    post.status = status
     post.parent = parent
+    post.text = text
     post.save()
 
     return post

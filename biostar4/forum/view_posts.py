@@ -25,26 +25,24 @@ def search_view(request, user):
 @fill_post
 def post_details(request, user, post):
     answers = Post.objects.filter(parent=post, type=Post.ANSWER).order_by('-vote_count',
-                                                                          '-creation_date')
-
-    print(answers)
-
+                                                                          'creation_date')
+    form = forms.Content(user=user, post=post, initial=dict(parent=post.id))
     context = dict(
         user=user,
         post=post,
         answers=answers,
+        form = form,
     )
     return render(request, "post_details.html", context=context)
 
 
 @login_required
-@fill_user
-def post_new_content(request, user):
-    return post_new(request=request, user=user, toplevel=False)
+def new_content(request):
+    return new_post(request=request, toplevel=False)
 
 @login_required
 @fill_user
-def post_new(request, user, toplevel=True):
+def new_post(request, user, toplevel=True):
     "New post"
 
     if toplevel:
@@ -70,7 +68,7 @@ def post_new(request, user, toplevel=True):
         user=user,
         form=form,
         form_title=form_title,
-        action=reverse("post_new")
+        action=reverse("new_post")
     )
 
     return render(request, "post_edit.html", context=context)
@@ -78,7 +76,7 @@ def post_new(request, user, toplevel=True):
 
 @login_required
 @edit_post
-def post_edit(request, user, post):
+def edit_post(request, user, post):
     "Edit toplevel post"
 
     initial = dict(
@@ -115,7 +113,7 @@ def post_edit(request, user, post):
         user=user,
         form=form,
         form_title=form_title,
-        action=reverse("post_edit", kwargs=dict(pid=post.id))
+        action=reverse("edit_post", kwargs=dict(pid=post.id))
     )
 
     return render(request, "post_edit.html", context=context)

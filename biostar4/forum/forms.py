@@ -231,7 +231,7 @@ class TopLevel(forms.Form):
                            )
 
     type = forms.ChoiceField(label="Post type", choices=POST_TYPES,
-                             initial=Post.PUBLISHED)
+                             initial=Post.QUESTION)
 
     status = forms.ChoiceField(label="State",
                                choices=POST_STATUS, initial=Post.PUBLISHED)
@@ -250,6 +250,7 @@ class TopLevel(forms.Form):
         super(TopLevel, self).__init__(*args, **kwargs)
         self.user = user
         self.post = post
+        self.toplevel = True
 
         # Populate the file remove fields.
         if post:
@@ -294,3 +295,21 @@ class Content(forms.Form):
                            initial='', widget=PagedownWidget(),
                            min_length=25,max_length=Post.MAX_CHARS,
                            )
+    parent = forms.IntegerField(widget=forms.HiddenInput)
+
+
+    uploads = MultiFileField(label="Attach files",
+                             min_num=0, max_num=Post.MAX_FILE_NUM, required=False,
+                             max_file_size=1024 * 1024 * Post.MAX_FILE_SIZE,
+                             help_text="You may attach up to {} files, {} Mb per file.".format(
+                                 Post.MAX_FILE_NUM, Post.MAX_FILE_SIZE))
+
+    remove_ids = forms.MultipleChoiceField(label="Remove uploaded files", required=False,
+                                           widget=forms.CheckboxSelectMultiple)
+
+    def __init__(self, user, post, *args, **kwargs):
+        # Need to access user during field validation.
+        super(Content, self).__init__(*args, **kwargs)
+        self.toplevel = False
+        self.user = user
+        self.post = post

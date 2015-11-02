@@ -9,6 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 import os, random, logging
 from django.conf import settings
 from django.db.models import F
+from django.core.urlresolvers import reverse
 
 logger = logging.getLogger('biostar')
 
@@ -380,6 +381,13 @@ class Post(Model):
 
     class Meta:
         ordering = ['-lastedit_date']
+
+    def url(self):
+        url = reverse("post_details", kwargs=dict(pid=self.root.id))
+        if self.is_toplevel():
+            return url
+        else:
+            return "%s#%d" % (url, self.id)
 
     def get_files(self):
         return self.files.all()

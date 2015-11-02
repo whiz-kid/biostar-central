@@ -27,7 +27,7 @@ class SiteTest(TestBase):
             self.EQ(r.status_code, 200)
 
     def test_redirects(self):
-        links = "me user_edit post_new messages votes my_site".split()
+        links = "me user_edit new_post messages votes my_site".split()
         for link in links:
             url = reverse(link)
             r = self.c.get(url)
@@ -53,7 +53,7 @@ class UserTest(TestBase):
 
     def test_login(self):
         "Logged in users can access their pages."
-        links = "post_new messages votes my_site".split()
+        links = "new_post messages votes my_site".split()
         for link in links:
             url = reverse(link)
             r = self.c.get(url)
@@ -91,7 +91,7 @@ class PostTest(TestBase):
         )
         signup = reverse("signup")
         self.c.post(signup, {'email': self.user.email, 'password': self.user.password})
-        self.post_new = reverse("post_new")
+        self.post_new = reverse("new_post")
 
 
     def make_post(self):
@@ -132,7 +132,7 @@ class PostTest(TestBase):
         post = self.make_post()
 
         # Edit post.
-        self.post_edit = reverse("post_edit", kwargs=dict(pid=post.id))
+        self.post_edit = reverse("edit_post", kwargs=dict(pid=post.id))
         new_title = fake.sentence()
         r = self.c.post(self.post_edit, {
             'title': new_title,

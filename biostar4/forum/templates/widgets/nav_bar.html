@@ -8,7 +8,7 @@
 
         <div class="uk-dropdown uk-dropdown-small">
             <ul class="uk-nav uk-nav-dropdown">
-                <li><a href="{%  url "post_new" %}">Write New Post</a></li>
+                <li><a href="{%  url "new_post" %}">Write New Post</a></li>
                 <li class="uk-nav-divider"></li>
                 <li><a href="#">Topics</a></li>
                 <li><a href="{% url 'user_list' %}">Community</a></li>
@@ -26,8 +26,8 @@
         </a>
     </li>
 
-    <li class="{% active request 'post_new' %} uk-hidden-small">
-        <a href="{% url "post_new" %}">
+    <li class="{% active request 'new_post' %} uk-hidden-small">
+        <a href="{% url "new_post" %}">
             <span class="uk-hidden-small">Write</span></a>
     </li>
 

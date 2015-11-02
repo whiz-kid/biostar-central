@@ -16,8 +16,12 @@ urlpatterns = [
     url(r'^u/(?P<uid>\d+)/$', view_users.user_profile, name="user_profile"),
 
     # Post related actions
-    url(r'^site/post/new/$', view_posts.post_new, name='post_new'),
-    url(r'^site/post/edit/(?P<pid>\d+)/$', view_posts.post_edit, name='post_edit'),
+    url(r'^site/new/post/$', view_posts.new_post, name='new_post'),
+
+    url(r'^site/edit/post/(?P<pid>\d+)/$', view_posts.edit_post, name='edit_post'),
+
+    # Post related actions
+    url(r'^site/new/answer/$', view_posts.new_content, name='new_answer'),
 
     url(r'^p/(?P<pid>\d+)/$', view_posts.post_details, name="post_details"),
 

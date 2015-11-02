@@ -1,7 +1,21 @@
 {% extends 'postlist_base.html' %}
 {% load widgets %}
-
+{% load static %}
 {% block title %}Biostar: {{ post.title }}{% endblock %}
+
+{% block head %}
+
+    <script type="text/javascript"
+            src="{% static "lib/pagedown/Markdown.Converter.js" %}"></script>
+    <script type="text/javascript"
+            src="{% static "lib/pagedown/Markdown.Sanitizer.js" %}"></script>
+    <script type="text/javascript"
+            src="{% static "lib/pagedown/Markdown.Editor.js" %}"></script>
+
+    {#  Markdown editor style #}
+    <link rel="stylesheet" href={% static "lib/pagedown/markdown.css" %}>
+
+{% endblock %}
 
 {% block main %}
 
@@ -14,7 +28,7 @@
             <div class="post_title uk-margin-bottom">{{ post.title }}</div>
             <div>{{ post.html|safe }}</div>
 
-            <a href='{% url "post_edit" pid=post.id %}'>EDIT</a>
+            <a href='{% url "edit_post" pid=post.id %}'>EDIT</a>
         </div>
 
         {% if post.files.all %}
@@ -46,10 +60,24 @@
                 <div class="uk-align-right user_box">
                     {% user_box answer.author date=answer.lastedit_date %}
                 </div>
-                <div>{{ answer.html|safe }}</div>
+                <div>A{{ answer.text|safe }}B</div>
                 <div class="uk-clearfix"></div>
             </div>
         {% endfor %}
+
+        <form method="post" enctype="multipart/form-data"
+              class="uk-form uk-form-stacked uk-width-1-1"
+              action="{% url 'new_answer' %}">
+
+            <div class="uk-width-1-1 uk-width-medium-4-6 uk-panel-box form_bg">
+                {% form_field form.text %}
+            </div>
+             {% csrf_token %}
+            {{  form.parent }}
+             <div class="uk-form-row user_edit">
+                <button class="uk-button uk-button-success uk-margin-top">Submit</button>
+            </div>
+        </form>
 
     </div>
 
