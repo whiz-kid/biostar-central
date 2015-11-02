@@ -60,7 +60,7 @@
                 <div class="uk-align-right user_box">
                     {% user_box answer.author date=answer.lastedit_date %}
                 </div>
-                <div>A{{ answer.text|safe }}B</div>
+                <div>{{ answer.html|safe }}</div>
                 <div class="uk-clearfix"></div>
             </div>
         {% endfor %}
