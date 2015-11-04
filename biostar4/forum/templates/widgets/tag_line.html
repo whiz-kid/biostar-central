@@ -6,10 +6,10 @@
 </div>
 
 <div class="muted">
-    posted {{ post.creation_date|time_ago }} ago by <a
+    written {{ post.creation_date|time_ago }} ago by <a
         href="{% url "user_profile" uid=post.author_id %}">{{ post.author.profile.name }}</a>
     {% if post.lastedit_user %}
-        &bull; thread updated {{ post.lastedit_date|time_ago }} ago
+        &bull; last activity {{ post.lastedit_date|time_ago }}
         by <a href="{% url "user_profile" uid=post.lastedit_user_id %}">{{ post.lastedit_user.profile.name }}</a>
     {% endif %}
 </div>

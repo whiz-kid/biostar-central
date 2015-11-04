@@ -86,6 +86,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'biostar4.context.extras',
             ],
         },
     },
@@ -141,6 +142,9 @@ MEDIA_ROOT = os.getenv("MEDIA_ROOT") or os.path.join(BASE_DIR, "www", "export", 
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
+# How many seconds between session updates.
+SESSION_UPDATE_SECONDS = 600
 
 # Google RECAPTHCA settings.
 RECAPTCHA_ENABLED = bool(os.getenv("RECAPTCHA_ENABLED"))
