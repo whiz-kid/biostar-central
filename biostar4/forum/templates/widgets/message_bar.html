@@ -1,9 +1,9 @@
 {% if messages %}
-    <div class="block">
-        <ul class="messagelist">
-            {% for message in messages %}
-                <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
+    <div class="uk-width-1-1">
+    <ul class="messagelist" id="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
     </div>
 {% endif %}

@@ -40,17 +40,13 @@
             {% nav_bar request=request user=user %}
         </div>
 
-        {# Message bar #}
-        {% if messages %}
-            <div class="uk-width-1-1" id="messages">
-                {% message_bar messages %}
-            </div>
-        {% endif %}
-
         {# This is where all content will go #}
         <div class="uk-width-1-1" id="body">
-            {% block body %}
 
+            {# Message bar #}
+            {% message_bar messages %}
+
+            {% block body %}
                 Block Body
             {% endblock %}
         </div>

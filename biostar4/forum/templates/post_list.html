@@ -29,10 +29,6 @@
                     <a href="{% url 'post_details' pid=post.id %}">{{ post.title }}</a>
                 </div>
 
-                <div class="blurb uk-hidden-small uk-hidden-medium" style="">
-                    {{ post.blurb }}...
-                </div>
-
                 {% tag_line post %}
 
             </div>
