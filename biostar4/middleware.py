@@ -34,4 +34,4 @@ class BiostarMiddleware(object):
             elapsed = (now - user.last_login).seconds
             if elapsed > settings.SESSION_UPDATE_SECONDS:
                 # Set the last login time.
-                User.objects.filter(user_id=user.id).update(last_login=now)
+                User.objects.filter(pk=user.id).update(last_login=now)

@@ -233,7 +233,7 @@ class TopLevel(forms.Form):
     type = forms.ChoiceField(label="Post type", choices=POST_TYPES,
                              initial=Post.QUESTION)
 
-    status = forms.ChoiceField(label="State",
+    status = forms.ChoiceField(label="Action",
                                choices=POST_STATUS, initial=Post.PUBLISHED)
 
     uploads = MultiFileField(label="Attach files",

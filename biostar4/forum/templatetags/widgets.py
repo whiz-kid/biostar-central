@@ -58,11 +58,6 @@ def nav_bar(request, user):
 def message_bar(messages):
     return dict(messages=messages)
 
-@register.inclusion_tag('widgets/notify_bar.html')
-def notify_bar(post, user):
-    return dict(post=post, user=user)
-
-
 @register.inclusion_tag('widgets/user_box.html')
 def user_box(target, date=None, size=80):
     date = date or target.last_login
@@ -73,11 +68,9 @@ def user_box(target, date=None, size=80):
 def tag_line(post):
     return dict(post=post)
 
-
 @register.inclusion_tag('widgets/form_errors.html')
 def form_errors(form):
     return dict(form=form)
-
 
 @register.filter
 def hide_email(value):

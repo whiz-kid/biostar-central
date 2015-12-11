@@ -8,7 +8,7 @@
 
         <div class="uk-dropdown uk-dropdown-small">
             <ul class="uk-nav uk-nav-dropdown">
-                <li><a href="{%  url "new_post" %}">Write New Post</a></li>
+                <li><a href="{% url "new_post" %}">Write New Post</a></li>
                 <li class="uk-nav-divider"></li>
                 <li><a href="#">Topics</a></li>
                 <li><a href="{% url 'user_list' %}">Community</a></li>
@@ -19,54 +19,17 @@
         </div>
     </li>
 
-
     <li class="{% active request 'home' %}">
         <a href="{% url 'home' %} ">
             <i class="uk-icon-home "></i>
         </a>
     </li>
 
-    <li class="{% active request 'new_post' %} uk-hidden-small">
-        <a href="{% url "new_post" %}">
-            <span class="uk-hidden-small">Write</span></a>
-    </li>
-
-    <li class="{% active request 'user_list' %} uk-visible-large">
-        <a href="{% url 'user_list' %} ">
-            Community
-        </a>
-    </li>
-
-    <li class="{% active request 'planet' %} uk-hidden-small">
-        <a href="{% url 'planet' %}">
-            Planet
-        </a>
-    </li>
-
-    {% if user.is_anonymous %}
-
-        <li class="{% active request 'login' %}">
-            <a href="{% url 'login' %}"><i class="uk-icon-sign-in"></i> <span
-                    class="uk-hidden-small">Log in</span></a>
-        </li>
-
-        <li class="{% active request 'signup' %}">
-            <a href="{% url 'signup' %}"><i class="uk-icon-arrow-circle-up"></i> <span
-                    class="uk-hidden-small">Sign up</span></a>
-        </li>
-    {% endif %}
-
     {% if user.is_authenticated %}
-
-        <li class="{% active request 'my_site' %} uk-hidden-small">
-            <a href="{% url 'my_site' %}">
-                My Site
-            </a>
-        </li>
 
         <li class="{% active request 'messages' %}">
             <a href="{% url 'messages' %}">
-                <span class="{%  notify user.profile.new_messages %}">
+                <span class="{% notify user.profile.new_messages %}">
                     <i class="uk-icon-envelope"></i>
                      <span class="uk-hidden-small">{% plusnum user.profile.new_messages %}</span>
                 </span>
@@ -75,9 +38,9 @@
 
         <li class="{% active request 'votes' %}">
             <a href="{% url 'votes' %}">
-                <span class="{%  notify user.profile.new_votes %}">
+                <span class="{% notify user.profile.new_votes %}">
                     <i class="uk-icon-heart"></i>
-                     <span class="uk-hidden-small">{%  plusnum user.profile.new_votes %}</span>
+                     <span class="uk-hidden-small">{% plusnum user.profile.new_votes %}</span>
                 </span>
             </a>
         </li>
@@ -104,6 +67,36 @@
             </div>
         </li>
 
+    {% endif %}
+
+    <li class="{% active request 'new_post' %} uk-hidden-small">
+        <a href="{% url "new_post" %}">
+            <span class="uk-hidden-small">Write</span></a>
+    </li>
+
+    <li class="{% active request 'user_list' %} uk-visible-large">
+        <a href="{% url 'user_list' %} ">
+            Community
+        </a>
+    </li>
+
+    <li class="{% active request 'planet' %} uk-hidden-small">
+        <a href="{% url 'planet' %}">
+            Planet
+        </a>
+    </li>
+
+    {% if user.is_anonymous %}
+
+        <li class="{% active request 'login' %}">
+            <a href="{% url 'login' %}"><i class="uk-icon-sign-in"></i> <span
+            class="uk-hidden-small">Log in</span></a>
+        </li>
+
+        <li class="{% active request 'signup' %}">
+            <a href="{% url 'signup' %}"><i class="uk-icon-arrow-circle-up"></i> <span
+            class="uk-hidden-small">Sign up</span></a>
+        </li>
     {% endif %}
 
 

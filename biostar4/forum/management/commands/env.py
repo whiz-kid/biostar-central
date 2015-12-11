@@ -33,9 +33,6 @@ class Command(BaseCommand):
         print("DEBUG: {}".format(settings.DEBUG))
         print("THEME_DIRS: {}".format(settings.THEME_DIRS))
         print("STATICFILES_DIRS: {}".format(settings.STATICFILES_DIRS))
-
-        u_count = User.objects.all().count()
-        print ("Found {} users in the database".format(u_count))
         print('---------------------')
         print("RECAPTCHA_ENABLED: {}".format(settings.RECAPTCHA_ENABLED))
         print("SECRET_KEY: {}".format(settings.SECRET_KEY))

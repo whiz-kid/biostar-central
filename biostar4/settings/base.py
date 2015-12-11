@@ -97,11 +97,13 @@ WSGI_APPLICATION = 'biostar4.wsgi.application'
 TAGGIT_CASE_INSENSITIVE = True
 
 # Database settings.
-__NAME = os.path.join(BASE_DIR, 'www', 'db', os.getenv('DATABASE_NAME', 'biostar4.sqlite3'))
+__DEFAULT_NAME = os.path.join(BASE_DIR, 'www', 'db', 'biostar4.sqlite3')
+DATABASE_NAME = os.getenv('DATABASE_NAME', __DEFAULT_NAME)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': __NAME,
+        'NAME': DATABASE_NAME,
     }
 }
 

@@ -28,7 +28,6 @@
             <div class="post_title uk-margin-bottom">{{ post.title }}</div>
             <div>{{ post.html|safe }}</div>
 
-            <a href='{% url "edit_post" pid=post.id %}'>EDIT</a>
         </div>
 
         {% if post.files.all %}
@@ -47,13 +46,10 @@
 
         {% tag_line post %}
 
-        {% notify_bar post=post user=user %}
+        <a href='{% url "edit_post" pid=post.id %}'>EDIT</a>
 
-        <div class="uk-clearfix"></div>
+        <div class="uk-clearfix"><hr class="sep"></div>
 
-        <div class="post_title">
-            Answers
-        </div>
         {% for answer in answers %}
 
             <div class="answer">
@@ -61,9 +57,13 @@
                     {% user_box answer.author date=answer.lastedit_date %}
                 </div>
                 <div>{{ answer.html|safe }}</div>
-                <div class="uk-clearfix"></div>
             </div>
+
+            <div class="uk-clearfix"><hr class="sep"></div>
+
         {% endfor %}
+
+
 
         <form method="post" enctype="multipart/form-data"
               class="uk-form uk-form-stacked uk-width-1-1"

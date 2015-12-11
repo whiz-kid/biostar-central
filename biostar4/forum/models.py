@@ -57,6 +57,7 @@ class UserUpload(Model):
         self.name = self.name[-250:]
         super(UserUpload, self).save(*args, **kwargs)
 
+
 class Message(Model):
     '''
     Represents a message to the user
@@ -224,6 +225,7 @@ class Follower(Model):
             follower = Follower.objects.create(user=user, post=post.root, type=type)
             post.followers.add(follower)
 
+
 class PostUpload(Model):
     "Represents an uploaded file attached to a post"
     name = CharField(default='File', max_length=500)
@@ -246,6 +248,7 @@ class PostUpload(Model):
         # Keep the end with extension if possible.
         self.name = self.name[-250:]
         super(PostUpload, self).save(*args, **kwargs)
+
 
 class Post(Model):
     # How many files may be attached to posts.
@@ -280,6 +283,9 @@ class Post(Model):
     # Valid post types.
     QUESTION, ANSWER, COMMENT, TUTORIAL, FORUM, JOB, TOOL, NEWS = range(1, 9)
 
+    # Top level posts.
+    TOP_LEVEL = {QUESTION, FORUM, TOOL, TUTORIAL, NEWS, JOB}
+
     POST_TYPES = [
         (QUESTION, "Question"),
         (ANSWER, "Answer"),
@@ -290,9 +296,6 @@ class Post(Model):
         (TOOL, "Tool"),
         (NEWS, "News"),
     ]
-
-    # Top level posts.
-    TOP_LEVEL = {QUESTION, FORUM, TOOL, TUTORIAL, NEWS}
 
     def is_toplevel(self):
         return self.type in self.TOP_LEVEL
