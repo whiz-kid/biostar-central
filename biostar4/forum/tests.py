@@ -112,7 +112,13 @@ class PostTest(TestBase):
             'type': post.type,
         })
 
+        # Redirect on sucessful post action.
+        self.EQ(r.status_code, 302)
+
         post = Post.objects.filter(title=post.title).first()
+
+        # The post exists.
+        self.TRUE(post)
 
         return post
 
