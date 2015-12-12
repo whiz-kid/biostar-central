@@ -8,4 +8,9 @@ PARENT_DIR = os.path.abspath(os.path.join(BASE_DIR, ".."))
 sys.path.append(PARENT_DIR)
 
 if __name__ == "__main__":
-    print("Usage python -m biostar.manage")
+
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "biostar4.settings.base")
+
+    from django.core.management import execute_from_command_line
+
+    execute_from_command_line(sys.argv)
