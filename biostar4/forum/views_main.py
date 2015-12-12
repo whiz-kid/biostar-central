@@ -4,12 +4,16 @@ from biostar4.forum.models import *
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from biostar4.forum.decorators import *
 
+from channels import Channel
+
 @fill_user
 def home(request, user):
 
     #posts = Post.objects.filter(ptype__in=Post.TOP_LEVEL).exclude("html").order_by('-lastedit_date')[:100]
 
     posts = Post.objects.top_level(user=user)[:10]
+
+    Channel('test').send(dict(a=100))
 
     context = dict(
         user=user,

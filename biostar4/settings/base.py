@@ -53,7 +53,10 @@ INSTALLED_APPS = [
 CHANNEL_BACKENDS = {
     "default": {
         "BACKEND": "channels.backends.memory.InMemoryChannelBackend",
-        "ROUTING": {},
+        #"BACKEND": "channels.backends.database.DatabaseChannelBackend",
+        "ROUTING": {
+            "test": "biostar4.forum.worker.test",
+        },
     },
 }
 
