@@ -2,8 +2,10 @@
 """
 import os, sys
 
+
 def abspath(*args):
     return os.path.abspath(os.path.join(*args))
+
 
 # Directory name of this file.
 __THIS = os.path.dirname(abspath(__file__))
@@ -45,7 +47,15 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'taggit',
     'biostar4.forum.apps.Biostar4',
+    'channels',
 ]
+
+CHANNEL_BACKENDS = {
+    "default": {
+        "BACKEND": "channels.backends.memory.InMemoryChannelBackend",
+        "ROUTING": {},
+    },
+}
 
 # Add the debug toolbar if the environment variable is set.
 if os.getenv("DEBUG_TOOLBAR"):
@@ -139,7 +149,8 @@ CACHES = {
 
 WHOOSH_INDEX = abspath(BASE_DIR, 'www', 'whoosh')
 
-STATIC_ROOT = os.getenv("STATIC_ROOT") or os.path.join(BASE_DIR, "www", "export", "static")
+STATIC_ROOT = os.getenv("STATIC_ROOT") or os.path.join(BASE_DIR, "www", "export",
+                                                       "static")
 MEDIA_ROOT = os.getenv("MEDIA_ROOT") or os.path.join(BASE_DIR, "www", "export", "media")
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'

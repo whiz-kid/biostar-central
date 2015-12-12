@@ -16,22 +16,30 @@ Test site (may be on or off): http://test.biostars.org
 
 ### Install
 
-2. Install the requirements:
+1. Install the requirements:
 	
         pip3 install -r conf/requirements.txt
- 	
-3. Run the server
 
-		# Show your current environment:
+1. Site manager (corresponds to `manage.py` of a django project):
+
+        # Show all commands.
+        python -m biostar4
+
+        # Show the active environment.
 		python -m biostar4 env
 
-		# To initialize and migrate the database:
-		python -m biostar4 init migrate
+        # Test the site.
+        python -m biostar4 test
+
+1. Run the server
+
+		# Initialize the site.
+		python -m biostar4 migrate
 	 
 		# Run the development server on port 8080.
 		python -m biostar4 runserver 8080
-	 
-4. Most settings values will pulled from the environment if available.
+
+1. Most settings values will pulled from the environment if available.
    For details see:
 
 		more biostar4/settings/base.py

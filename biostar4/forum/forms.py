@@ -93,26 +93,40 @@ class LoginForm(forms.Form):
 class UserEditForm(forms.Form):
     name = forms.CharField(label='Name',
                            min_length=1, required=True, max_length=100,
+                           widget=forms.TextInput(
+                                  attrs={'class': 'uk-width-1-2'}),
                            help_text="The name displayed for you.")
 
     email = forms.CharField(label='Email', required=True,
+                            widget=forms.TextInput(
+                                  attrs={'class': 'uk-width-1-2'}),
                             help_text="Your email on the site")
 
     username = forms.CharField(label='Username', required=True, max_length=10,
+                               widget=forms.TextInput(
+                                  attrs={'class': 'uk-width-1-2'}),
                                help_text="A short identifier: can be used as <code>@username</code>")
 
     twitter = forms.CharField(label='Twitter',
                               required=False,
+                              widget=forms.TextInput(
+                                  attrs={'class': 'uk-width-1-2'}),
                               help_text="Your Twitter handle <code>goldilocks</code>")
 
     scholar = forms.CharField(label='Scholar',
                               required=False,
+                              widget=forms.TextInput(
+                                  attrs={'class': 'uk-width-1-2'}),
                               help_text="Your google scholar id <code>hordfUUAAAAJ</code>")
 
     website = forms.URLField(label='Website', required=False, initial='',
+                             widget=forms.TextInput(
+                                  attrs={'class': 'uk-width-1-1'}),
                              help_text="The address of your website.")
 
     location = forms.CharField(label='Location', required=False,
+                               widget=forms.TextInput(
+                                  attrs={'class': 'uk-width-1-1'}),
                                help_text="Institute/Town/Country/Continent")
 
     my_tags = forms.CharField(label='My Tags', max_length=500,
