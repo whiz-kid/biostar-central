@@ -273,6 +273,7 @@ INSTALLED_APPS = [
     'biostar.apps.messages',
     'biostar.apps.badges',
     'biostar.apps.planet',
+    'starbase.forum',
 
     # The main Biostar server.
     'biostar.server',
