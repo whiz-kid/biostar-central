@@ -10,7 +10,6 @@ from .logger import LOGGING
 # Turn off debug mode on deployed servers.
 DEBUG = True
 
-
 # Should the django compressor be used.
 USE_COMPRESSOR = False
 
@@ -202,6 +201,7 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
 )
 
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -223,6 +223,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [ TEMPLATE_DIR],
         'APP_DIRS': True,
+
         'OPTIONS': {
             'debug': DEBUG,
             'string_if_invalid': "*** MISSING ***",
@@ -252,7 +253,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
 
     'django.contrib.sites',
-    'django.contrib.messages',
+    'biostar.server.apps.MessageConfig',
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
 
@@ -269,7 +270,7 @@ INSTALLED_APPS = [
     'biostar.apps.users',
     'biostar.apps.util',
     'biostar.apps.posts',
-    'biostar.server.apps.MessageConfig',
+    'biostar.apps.messages',
     'biostar.apps.badges',
     'biostar.apps.planet',
 
@@ -333,6 +334,43 @@ MAX_POSTS_TRUSTED_USER = 30
 # How many top level posts per day for a new user.
 MAX_TOP_POSTS_NEW_USER = 2
 MAX_TOP_POSTS_TRUSTED_USER = 5
+
+SOCIALACCOUNT_ADAPTER = 'biostar.server.middleware.AutoSignupAdapter'
+
+# Customize this to match the providers listed in the APPs
+SOCIALACCOUNT_PROVIDERS = {
+
+    #'facebook': {
+    #    'SCOPE': ['email'],
+    #    'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+    #    'METHOD': 'oauth2',
+    #    'LOCALE_FUNC': lambda x: 'en_US',
+    #    'PROVIDER_KEY': get_env("FACEBOOK_PROVIDER_KEY"),
+    #    'PROVIDER_SECRET_KEY': get_env("FACEBOOK_PROVIDER_SECRET_KEY"),
+    #},
+
+    'persona': {
+        'REQUEST_PARAMETERS': {'siteName': 'Biostar'}
+    },
+
+    'github': {
+        'SCOPE': ['email'],
+        'PROVIDER_KEY': get_env("GITHUB_PROVIDER_KEY"),
+        'PROVIDER_SECRET_KEY': get_env("GITHUB_PROVIDER_SECRET_KEY"),
+    },
+
+    'google': {
+        'SCOPE': ['email', 'https://www.googleapis.com/auth/userinfo.profile'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'PROVIDER_KEY': get_env("GOOGLE_PROVIDER_KEY"),
+        'PROVIDER_SECRET_KEY': get_env("GOOGLE_PROVIDER_SECRET_KEY"),
+    },
+
+    #'orcid': {
+    #    'PROVIDER_KEY': get_env("ORCID_PROVIDER_KEY"),
+    #    'PROVIDER_SECRET_KEY': get_env("ORCID_PROVIDER_SECRET_KEY"),
+    #},
+}
 
 # The google id will injected as a template variable.
 GOOGLE_TRACKER = ""

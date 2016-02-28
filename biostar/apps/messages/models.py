@@ -31,6 +31,10 @@ class MessageBody(models.Model):
     """
     A private message from user to user
     """
+
+    class Meta:
+        db_table='messages_messagebody'
+
     MAX_SIZE = 120
 
     text = models.TextField(_("Text"))
@@ -55,6 +59,9 @@ from biostar.const import LOCAL_MESSAGE, MESSAGING_TYPE_CHOICES
 
 # Connects user to message bodies
 class Message(models.Model):
+
+    class Meta:
+        db_table='messages_message'
 
     "Connects recipents to sent messages"
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='recipients', verbose_name=_("Recipient"))
