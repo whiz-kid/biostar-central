@@ -222,10 +222,10 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [ TEMPLATE_DIR],
-        'TEMPLATE_DEBUG': DEBUG,
-        'TEMPLATE_STRING_IF_INVALID': "*** MISSING ***",
         'APP_DIRS': True,
         'OPTIONS': {
+            'debug': DEBUG,
+            'string_if_invalid': "*** MISSING ***",
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
