@@ -12,6 +12,7 @@ from django.core.urlresolvers import reverse
 from biostar import const
 from biostar.server.views import LATEST
 from django.template.context_processors import csrf
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -108,8 +109,9 @@ def gravatar(user, size=80):
         'd': 'identicon',
     }
     )
-    return """<img src="%s" alt="gravatar for %s"/>""" % (gravatar_url, name)
-
+    img = """<img src="%s" alt="gravatar for %s"/>""" % (gravatar_url, name)
+    img = mark_safe(img)
+    return img
 
 def pluralize(value, word):
     if value > 1:
