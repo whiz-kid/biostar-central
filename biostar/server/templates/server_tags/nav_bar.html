@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 {% load server_tags %}
 
 <div class="row visible-lg visible-md">
@@ -86,12 +86,12 @@
     <div class="col-md-12" id="navbar">
 
         <div class="col-lg-3 visible-lg" id="logo">
-            <a href="/"><img src="{{ STATIC_URL }}{{ SITE_LOGO }}"></a>
+            <a href="/"><img src="{% static SITE_LOGO %}"></a>
         </div>
 
         <div class="col-md-3 visible-md text-center">
             <a href="/">
-                <a href="/"><img style="width:200px; height: auto;" src="{{ STATIC_URL }}{{ SITE_LOGO }}"></a>
+                <a href="/"><img style="width:200px; height: auto;" src="{% static SITE_LOGO %}"></a>
             </a>
         </div>
 
