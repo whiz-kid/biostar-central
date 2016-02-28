@@ -55,6 +55,7 @@ from biostar.const import LOCAL_MESSAGE, MESSAGING_TYPE_CHOICES
 
 # Connects user to message bodies
 class Message(models.Model):
+
     "Connects recipents to sent messages"
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='recipients', verbose_name=_("Recipient"))
     body = models.ForeignKey(MessageBody, related_name='messages', verbose_name=_("Message"))

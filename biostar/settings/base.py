@@ -10,8 +10,6 @@ from .logger import LOGGING
 # Turn off debug mode on deployed servers.
 DEBUG = True
 
-# Template debug mode.
-TEMPLATE_DEBUG = DEBUG
 
 # Should the django compressor be used.
 USE_COMPRESSOR = False
@@ -115,8 +113,6 @@ DATABASES = {
     }
 }
 
-# admin site may fail if this setting is active
-TEMPLATE_STRING_IF_INVALID = "*** MISSING ***"
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -206,12 +202,6 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
 )
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -228,12 +218,24 @@ ROOT_URLCONF = 'biostar.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'biostar.wsgi.application'
 
-TEMPLATE_DIRS = (
-    TEMPLATE_DIR,
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [ TEMPLATE_DIR],
+        'TEMPLATE_DEBUG': DEBUG,
+        'TEMPLATE_STRING_IF_INVALID': "*** MISSING ***",
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'biostar.server.context.shortcuts',
+            ],
+        },
+    },
+]
 
 # The user score that halves the chance.
 HALF_LIFE = 30.0
@@ -249,9 +251,6 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
 
-
-    # 'django.contrib.sessions',
-
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -261,9 +260,7 @@ INSTALLED_APPS = [
     'compressor',
 
     # Enabling the admin and its documentation.
-    'django.contrib.sites',
     'django.contrib.admin',
-    'django.contrib.messages',
     'django.contrib.humanize',
     'django.contrib.flatpages',
     'django.contrib.sessions',
@@ -272,7 +269,7 @@ INSTALLED_APPS = [
     'biostar.apps.users',
     'biostar.apps.util',
     'biostar.apps.posts',
-    'biostar.apps.messages',
+    'biostar.server.apps.MessageConfig',
     'biostar.apps.badges',
     'biostar.apps.planet',
 
@@ -296,7 +293,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'djcelery',
     'kombu.transport.django',
-    'south',
     'captcha',
 ]
 
@@ -315,29 +311,11 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    # Django specific context processors.
-    "django.core.context_processors.debug",
-    "django.core.context_processors.static",
-    "django.core.context_processors.request",
-    "django.contrib.auth.context_processors.auth",
-    "django.contrib.messages.context_processors.messages",
-
-    # Social authorization specific context.
-    "allauth.account.context_processors.account",
-    "allauth.socialaccount.context_processors.socialaccount",
-
-    # Biostar specific context.
-    'biostar.server.context.shortcuts',
-)
-
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
     "biostar.server.middleware.ExternalAuth",
 )
 
-ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
 # Should the captcha be shown on the signup page.
 CAPTCHA = True
@@ -355,43 +333,6 @@ MAX_POSTS_TRUSTED_USER = 30
 # How many top level posts per day for a new user.
 MAX_TOP_POSTS_NEW_USER = 2
 MAX_TOP_POSTS_TRUSTED_USER = 5
-
-SOCIALACCOUNT_ADAPTER = 'biostar.server.middleware.AutoSignupAdapter'
-
-# Customize this to match the providers listed in the APPs
-SOCIALACCOUNT_PROVIDERS = {
-
-    #'facebook': {
-    #    'SCOPE': ['email'],
-    #    'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
-    #    'METHOD': 'oauth2',
-    #    'LOCALE_FUNC': lambda x: 'en_US',
-    #    'PROVIDER_KEY': get_env("FACEBOOK_PROVIDER_KEY"),
-    #    'PROVIDER_SECRET_KEY': get_env("FACEBOOK_PROVIDER_SECRET_KEY"),
-    #},
-
-    'persona': {
-        'REQUEST_PARAMETERS': {'siteName': 'Biostar'}
-    },
-
-    'github': {
-        'SCOPE': ['email'],
-        'PROVIDER_KEY': get_env("GITHUB_PROVIDER_KEY"),
-        'PROVIDER_SECRET_KEY': get_env("GITHUB_PROVIDER_SECRET_KEY"),
-    },
-
-    'google': {
-        'SCOPE': ['email', 'https://www.googleapis.com/auth/userinfo.profile'],
-        'AUTH_PARAMS': {'access_type': 'online'},
-        'PROVIDER_KEY': get_env("GOOGLE_PROVIDER_KEY"),
-        'PROVIDER_SECRET_KEY': get_env("GOOGLE_PROVIDER_SECRET_KEY"),
-    },
-
-    #'orcid': {
-    #    'PROVIDER_KEY': get_env("ORCID_PROVIDER_KEY"),
-    #    'PROVIDER_SECRET_KEY': get_env("ORCID_PROVIDER_SECRET_KEY"),
-    #},
-}
 
 # The google id will injected as a template variable.
 GOOGLE_TRACKER = ""

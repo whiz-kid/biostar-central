@@ -2,7 +2,6 @@ from django import template
 from django.conf import settings
 from django.template import Context, Template
 from django.template.defaultfilters import stringfilter
-from django.core.context_processors import csrf
 from biostar.apps.posts.models import Post, Tag
 from biostar.apps.messages.models import Message
 import random, hashlib, urllib
@@ -12,6 +11,7 @@ from django import template
 from django.core.urlresolvers import reverse
 from biostar import const
 from biostar.server.views import LATEST
+from django.template.context_processors import csrf
 
 register = template.Library()
 

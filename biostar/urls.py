@@ -11,7 +11,8 @@ from biostar.apps.posts.views import NewAnswer, NewPost, EditPost, external_post
 from biostar.apps.users.views import external_logout, external_login, CaptchaView, DigestManager, unsubscribe
 from biostar.apps.planet.views import BlogPostList
 
-urlpatterns = patterns('',
+
+urlpatterns = [
 
     # Post listing.
     url(r'^$', views.PostList.as_view(), name="home"),
@@ -97,7 +98,7 @@ urlpatterns = patterns('',
 
     # Social login pages.
     url(r'^accounts/social/orcid/import/$', orcid.import_bio, name="orcid-import"),
-    (r'^accounts/', include('allauth.urls')),
+    url(r'^accounts/', include('allauth.urls')),
 
     # Redirecting old posts urls from previous versions of Biostar
     url(r'^post/redirect/(?P<pid>\d+)/$', views.post_redirect),
@@ -122,17 +123,18 @@ urlpatterns = patterns('',
      # Local robots.txt.
     url(r'^robots\.txt$', TemplateView.as_view(template_name="robots.txt", content_type='text/plain'), name='robots'),
 
-)
+]
 
 # Adding the sitemap.
-urlpatterns += patterns('',
-    (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': search.sitemaps})
-)
+from django.contrib.sitemaps.views import sitemap
+urlpatterns += [
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': search.sitemaps})
+]
 
 from biostar.server.feeds import LatestFeed, TagFeed, UserFeed, PostFeed, PostTypeFeed, PlanetFeed
 
 # Adding the RSS related urls.
-urlpatterns += patterns('',
+urlpatterns +=[
 
     # RSS info page.
     url(r'^info/rss/$', views.RSS.as_view(), name='rss'),
@@ -145,18 +147,18 @@ urlpatterns += patterns('',
     url(r'^feeds/post/(?P<text>[\w\-_\+!]+)/$', PostFeed(), name='post-feed' ),
     url(r'^feeds/type/(?P<text>[\w\-_\+!]+)/$', PostTypeFeed(), name='post-type'),
     url(r'^feeds/planet/$', PlanetFeed(), name='planet-feed'),
-)
+]
 
-urlpatterns += patterns('',
+urlpatterns += [
     url(r'^info/(?P<slug>\w+)/$', views.FlatPageView.as_view(), name='flatpage'),
     url(r'^info/update/(?P<pk>\d+)/$', views.FlatPageUpdate.as_view(), name='flatpage-update'),
-)
+]
 
 # This is used only for the debug toolbar
 if settings.DEBUG:
     import debug_toolbar
     from biostar.apps.users.views import test_login
-    urlpatterns += patterns('',
+    urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),
         url(r'^test/login/', test_login),
-    )
+    ]

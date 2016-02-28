@@ -13,7 +13,9 @@ from datetime import datetime, timedelta
 import bleach
 from biostar import const
 
-SITE = Site.objects.get(id=settings.SITE_ID)
+
+#SITE = Site.objects.get(id=settings.SITE_ID)
+
 SITE_NAME = settings.SITE_NAME
 
 FEED_COUNT = 25

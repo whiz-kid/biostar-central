@@ -6,9 +6,9 @@ from os.path import join, normpath, isfile, exists
 from os import makedirs
 
 from django.http import HttpResponse
-from django.contrib.sites.models import get_current_site
+from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
-from django.core.cache import get_cache
+from django.core.cache import cache
 
 from ..apps.users.models import User
 from ..apps.posts.models import Vote, Post, PostView
