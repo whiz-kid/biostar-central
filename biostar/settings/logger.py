@@ -22,10 +22,10 @@ LOGGING = {
 
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s.%(funcName)s %(message)s'
+            'format': '%(levelname)s|%(asctime)s|%(module)s.%(funcName)s|%(message)s'
         },
         'simple': {
-            'format': '%(levelname)s %(message)s'
+            'format': '%(levelname)s|%(message)s'
         },
     },
 
