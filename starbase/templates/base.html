@@ -1,0 +1,71 @@
+{% load i18n %}
+{% load humanize %}
+{% load compress %}
+{% load static %}
+
+<html>
+<head>
+    <title>{% block title %}Page Title{% endblock %}</title>
+
+    {# CSS #}
+
+
+    <link href="{% static 'lib/normalize.css' %}" rel="stylesheet"
+          type="text/css"/>
+
+    <link href="{% static 'lib/skeleton.css' %}" rel="stylesheet"
+          type="text/css"/>
+
+    <link href="{% static 'starbase.css' %}" rel="stylesheet"
+          type="text/css"/>
+
+    {% block head %}
+        {#  extra head can be inserted here #}
+    {% endblock %}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+<div class="container">
+
+
+    <div class="row" id="pageheader">
+        {% block pageheader %}
+            <div class="row">
+                <div class="one-third column">
+                    <a href="{%  url 'home' %}"><img class="u-max-full-width" src="{% static 'sitelogo.png' %}"></a>
+                </div>
+                <div class="two-thirds column">
+
+                </div>
+            </div>
+        {% endblock %}
+        <hr>
+    </div>
+
+    <div class="row">
+        <div class="two-thirds column" id="pagebody">
+            {% block pagebody %}
+                Page Body
+            {% endblock %}
+        </div>
+        <div class="one-third column" id="sidebar">
+            {% block sidebar %}
+                Side Bar
+            {% endblock %}
+        </div>
+    </div>
+
+    <div class="row" id="pagefooter">
+        <hr>
+        {% block pagefooter %}
+            Powered by Biostar
+        {% endblock %}
+    </div>
+
+</div>
+</body>
+
+</html>

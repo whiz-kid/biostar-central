@@ -63,8 +63,7 @@ HOME_DIR = get_env("BIOSTAR_HOME")
 LIVE_DIR = abspath(HOME_DIR, 'live')
 
 DATABASE_NAME = abspath(LIVE_DIR, get_env("DATABASE_NAME"))
-STATIC_DIR = abspath(HOME_DIR, 'biostar', 'static')
-TEMPLATE_DIR = abspath(HOME_DIR, 'biostar', 'server', 'templates')
+
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -187,12 +186,6 @@ MEDIA_URL = '/static/upload/'
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
 
-# Additional locations of static files
-STATICFILES_DIRS = (
-    # Use absolute paths, not relative paths.
-    STATIC_DIR,
-)
-
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
@@ -213,30 +206,10 @@ MIDDLEWARE_CLASSES = (
     'biostar.server.middleware.Visit',
 )
 
-ROOT_URLCONF = 'biostar.urls'
-
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'biostar.wsgi.application'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ TEMPLATE_DIR],
-        'APP_DIRS': True,
 
-        'OPTIONS': {
-            'debug': DEBUG,
-            'string_if_invalid': "*** MISSING ***",
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'biostar.server.context.shortcuts',
-            ],
-        },
-    },
-]
 
 # The user score that halves the chance.
 HALF_LIFE = 30.0
@@ -465,13 +438,6 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_USER_MODEL_EMAIL_FIELD = "email"
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
 #ACCOUNT_LOGOUT_ON_GET = True
-
-# Google ReCaptcha No-Captcha settings
-# When set the captcha forms will be active.
-RECAPTCHA_PUBLIC_KEY = ""
-RECAPTCHA_PRIVATE_KEY = ""
-RECAPTCHA_USE_SSL = True     # Defaults to False
-NOCAPTCHA = True
 
 # Session specific settings.
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'

@@ -1,0 +1,10 @@
+{% load humanize %}
+{% if form.errors %}
+    <div class="row error">
+        <ul>
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

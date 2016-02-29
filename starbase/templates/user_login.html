@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load widgets %}
+
+{% block title %}
+    User Login
+{% endblock %}
+
+{% block sidebar %}
+    <div class="row" align="center">
+
+            <p>
+                Other Actions
+            </p>
+
+            <p>
+                <a class="button" href="{% url 'reset' %}">Reset Password</a>
+            </p>
+            <p>
+
+                <a class="button" href="{% url 'reset' %}">Create Account</a>
+            </p>
+
+            <p style="margin:1em;">
+               help | about
+            </p>
+
+    </div>
+
+{% endblock %}
+{% block pagebody %}
+    <div class="row">
+        <div class="one-half">
+            <form method="post" action="{% url 'login' %}">
+                <fieldset>
+
+                    <div align="center">
+                        Please Log In
+                    </div>
+
+                    {% form_error_summary form %}
+
+                    <div>
+                        <label for="email">Email</label>
+                        {{ form.email }}
+                    </div>
+                    <div>
+                        <label for="password">Password</label>
+                        {{ form.password }}
+                        {% csrf_token %}
+                    </div>
+                    {% if form.captcha %}
+                        <p>
+                            {{ form.captcha }}
+                        </p>
+                    {% endif %}
+
+                    <div>
+                        <input class="button-primary" type="submit" value="Submit">
+                    </div>
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+
+{% endblock %}
