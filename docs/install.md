@@ -1,12 +1,12 @@
-Install
-=======
+# Install
+
 
 The sourcecode can be obtained via::
 
 	git clone https://github.com/ialbert/biostar-central.git
 
-Getting started
----------------
+## Getting started
+
 
 Get the source and switch to the source directory. The
 recommended installation is via ``virtualenv`` and ``pip``::
@@ -34,8 +34,7 @@ To enable searching you must the content with::
 
     ./biostar.sh index
 
-Blog Aggregation
-----------------
+## Blog Aggregation
 
 Biostar has the ability to aggregate blog feeds and allow searching and linking to them.
 List the RSS feeds in a file then::
