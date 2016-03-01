@@ -27,12 +27,9 @@ Biostar is the software that runs several science oriented Q&A sites:
 * Email integration: import previous posts from mailing lists 
 * Low resource utilization and easy deployment. 
 
-### Support
+### License 
 
-The software is open source and free to use under the most permissible license.
-
-The developers of the software may be available to provide commercial level support
-for deploying Biostar sites for entire organizations. Contact: admin@biostars.org
+The software is open source and free to use the MIT License.
 
 Requirements: `Python 2.7`
 
@@ -40,10 +37,12 @@ Requirements: `Python 2.7`
 
 The documentation:
 
-* [Installation](docs/install.md)
-* [Deployment](docs/deploy.md)
+* [Install](docs/install.md)
+* [Manage](docs/manage.md)
+* [Customize](docs/customize.md)
+* [Deploy](docs/deploy.md)
 
-The source for the documentation can be found in  the `docs` folder.
+The source for the documentation can be found in  the [docs](./docs) folder.
 
 ### Quick Start
 
@@ -60,21 +59,34 @@ From the biostar source directory:
 
 Visit `http://www.lvh.me:8080` to see the site loaded with default data.
 The `www.lvh.me` domain resolves to `127.0.0.0` and is your local host
-with a nicer domain name. You may just as well 
-use `http://localhost:8080` or `http://127.0.0.0`.
+with a proper domain name. You may just as well use `http://localhost:8080` or `http://127.0.0.0`.
 
-In the default site user emails are built from database ids like so :
-`1@lvh.me`, `2@lvh.me`. User passwords are identical to the email. 
-You may then use these to log into your test site as any of the users. 
-
-Note that the first user always has staff level permissions and can 
-access the admin interface at `http://www.lvh.me:8080/admin/`
+In the default site the user emails are built from database ids like so :
+`1@lvh.me`, `2@lvh.me`. User passwords are identical to the emails. 
+You may use these to log into your test site as any of the users. 
+The first user always has staff level permissions and can 
+also access the admin interface at `http://www.lvh.me:8080/admin/`
 
 Enjoy.
 
----
+### Upgrade path
 
 Biostar versions and upgrade path: https://github.com/ialbert/biostar-central/issues/400
 
+### Citing Biostar
+
+* Parnell LD, Lindenbaum P, Shameer K, Dall'Olio GM, Swan DC, et al.
+  [2011 BioStar: An Online Question & Answer Resource for the Bioinformatics Community.] (http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1002216)
+  PLoS Comput Biol 7(10): e1002216. doi:10.1371/journal.pcbi.1002216
+
+### Commercial Support
+
+We may be able to provide support for organizations or institutions. 
+For more information contact **admin@biostars.org**
+
 [django]: http://www.djangoproject.com/
 [python]: http://www.python.org/
+
+### Contributors
+
+List of contributors: https://github.com/ialbert/biostar-central/graphs/contributors
