@@ -108,7 +108,7 @@ urlpatterns = patterns('',
     url(r'^questions/tagged/(?P<tag>.+)/$',views.tag_redirect),
 
     # Api.
-    url(r'^api/traffic/$', api.traffic, name='api-traffic'),
+    #url(r'^api/traffic/$', api.traffic, name='api-traffic'),
     url(r'^api/user/(?P<id>\d+)/$', api.user_details, name='api-user'),
     url(r'^api/post/(?P<id>\d+)/$', api.post_details, name='api-post'),
     url(r'^api/vote/(?P<id>\d+)/$', api.vote_details, name='api-vote'),

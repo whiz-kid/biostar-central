@@ -38,7 +38,7 @@ def get_recent_replies():
     return posts
 
 
-TRAFFIC_KEY = "traffic"
+"""TRAFFIC_KEY = "traffic"
 
 
 def get_traffic(minutes=60):
@@ -54,7 +54,7 @@ def get_traffic(minutes=60):
             traffic = [t[0] for t in traffic]
             traffic = len(set(traffic))
         cache.set(TRAFFIC_KEY, traffic, CACHE_TIMEOUT)
-    return traffic
+    return traffic"""
 
 
 def banner_trigger(request, half=settings.HALF_LIFE):
@@ -76,7 +76,7 @@ def shortcuts(request):
         "SITE_NAME": settings.SITE_NAME,
         "CATEGORIES": settings.CATEGORIES,
         "BIOSTAR_VERSION": VERSION,
-        "TRAFFIC": get_traffic(),
+        #"TRAFFIC": get_traffic(),
         'RECENT_REPLIES': get_recent_replies(),
         'RECENT_VOTES': get_recent_votes(),
         "RECENT_USERS": get_recent_users(),

@@ -37,11 +37,9 @@ def json_response(f):
     return to_json
 
 
-@json_response
+"""@json_response
 def traffic(request):
-    """
-    Traffic as post views in the last 60 min.
-    """
+    #Traffic as post views in the last 60 min.
     now = datetime.now()
     start = now-timedelta(minutes=60)
     try:
@@ -55,7 +53,7 @@ def traffic(request):
         'timestamp': datetime_to_unix(now),
         'post_views_last_60_min': post_views,
     }
-    return data
+    return data"""
 
 
 @json_response
